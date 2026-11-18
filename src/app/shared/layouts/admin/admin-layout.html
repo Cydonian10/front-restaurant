@@ -97,9 +97,9 @@
       >
     </nav>
     <div class="sidebar-footer">
-      <span class="avatar">TV</span
-      ><span
-        ><strong>Administración</strong><small>{{ auth.user()?.email }}</small></span
+      <span class="avatar">{{ profileStore.profile()?.name?.charAt(0) || '•' }}</span><span
+        ><strong>{{ profileStore.profile()?.role || 'Cargando…' }}</strong
+        ><small>{{ profileStore.profile()?.email }}</small></span
       ><button type="button" (click)="auth.logout()">Salir</button>
     </div>
   </aside>
@@ -117,8 +117,23 @@
       <div class="breadcrumb">
         <span>General</span><span>/</span><strong>Administración</strong>
       </div>
-      <span class="workspace"><i></i> Espacio de trabajo</span>
+      <span class="workspace"
+        ><i></i> {{ profileStore.profile()?.name || 'Cargando perfil…' }}</span
+      >
     </header>
-    <main class="content"><router-outlet /></main>
+    <main class="content">
+      @if (profileStore.status() === 'error') {
+        <div role="alert">
+          <p>No se pudo cargar tu perfil. Comprobá la conexión.</p>
+          <button type="button" class="link link-primary mt-3" (click)="loadProfile()">
+            Reintentar
+          </button>
+        </div>
+      } @else if (profileStore.status() === 'loaded') {
+        <router-outlet />
+      } @else {
+        <p role="status">Cargando perfil…</p>
+      }
+    </main>
   </div>
 </div>

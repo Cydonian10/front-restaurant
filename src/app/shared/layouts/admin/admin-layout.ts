@@ -1,5 +1,6 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { AuthService } from '../../../auth/access-control/auth.service';
+import { ProfileStore } from '../../../auth/stores/profile.store';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
@@ -10,6 +11,15 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class AdminLayout {
   protected readonly auth = inject(AuthService);
+  protected readonly profileStore = inject(ProfileStore);
+
+  constructor() {
+    this.loadProfile();
+  }
+
+  protected loadProfile(): void {
+    this.profileStore.load().subscribe({ error: () => {} });
+  }
   protected readonly menuOpen = signal(false);
   protected readonly inventoryOpen = signal(false);
   protected readonly salesOpen = signal(false);
