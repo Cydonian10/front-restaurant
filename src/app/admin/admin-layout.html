@@ -1,0 +1,30 @@
+<div class="admin-shell">
+  <button class="backdrop" type="button" aria-label="Cerrar menú" [class.visible]="menuOpen()" (click)="closeMenu()" tabindex="-1"></button>
+  <aside class="sidebar" [class.open]="menuOpen()" aria-label="Navegación de administración">
+    <a class="brand" routerLink="/admin" (click)="closeMenu()"><span class="brand-mark">v.</span><span>tienda <strong>vasquez</strong></span><small>ADMIN</small></a>
+    <nav class="navigation">
+      <p class="nav-label">General</p>
+      <a class="nav-link" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()"><span class="icon">▦</span> Inicio</a>
+      <p class="nav-label">Espacio de trabajo</p>
+      <button class="nav-link nav-toggle" type="button" (click)="inventoryOpen.set(!inventoryOpen())" [attr.aria-expanded]="inventoryOpen()" aria-controls="inventory-menu">
+        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+        Inventario <span class="chevron" [class.expanded]="inventoryOpen()">⌄</span>
+      </button>
+      <div id="inventory-menu" class="submenu-wrap" [class.expanded]="inventoryOpen()" [attr.inert]="inventoryOpen() ? null : ''"><div><div class="submenu">
+        <span>Productos</span><span>Categorías</span><span>Marcas</span><span>Unidades de medida</span>
+      </div></div></div>
+      <button class="nav-link nav-toggle" type="button" (click)="salesOpen.set(!salesOpen())" [attr.aria-expanded]="salesOpen()" aria-controls="sales-menu">
+        <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M2 3h2l2.4 11.4a2 2 0 0 0 2 1.6h10a2 2 0 0 0 2-1.6L22 7H5"/></svg>
+        Ventas <span class="chevron" [class.expanded]="salesOpen()">⌄</span>
+      </button>
+      <div id="sales-menu" class="submenu-wrap" [class.expanded]="salesOpen()" [attr.inert]="salesOpen() ? null : ''"><div><div class="submenu"><span>Ventas</span></div></div></div>
+      <p class="nav-label">Administración</p>
+      <a class="nav-link" routerLink="/admin/usuarios" routerLinkActive="active" (click)="closeMenu()"><span class="icon">♙</span> Usuarios</a>
+    </nav>
+    <div class="sidebar-footer"><span class="avatar">TV</span><span><strong>Administración</strong><small>Espacio de trabajo</small></span></div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar"><button class="menu-button" type="button" (click)="menuOpen.set(true)" [attr.aria-expanded]="menuOpen()" aria-label="Abrir menú">☰</button><div class="breadcrumb"><span>General</span><span>/</span><strong>Administración</strong></div><span class="workspace"><i></i> Espacio de trabajo</span></header>
+    <main class="content"><router-outlet /></main>
+  </div>
+</div>
