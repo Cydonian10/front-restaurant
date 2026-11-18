@@ -20,14 +20,15 @@
   />
   <button
     type="submit"
+    [disabled]="loading()"
     class="mt-5 h-12 w-full cursor-pointer rounded-xl bg-primary text-sm font-semibold text-primary-content transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
   >
-    Iniciar sesión
+    {{ loading() ? 'Ingresando…' : 'Iniciar sesión' }}
   </button>
 
-  @if (unavailable()) {
-    <p role="status" class="mt-3 text-center text-xs text-base-content/60">
-      El inicio de sesión aún no está disponible.
+  @if (error()) {
+    <p role="alert" class="mt-3 text-center text-xs text-error">
+      {{ error() }}
     </p>
   }
 
@@ -39,9 +40,10 @@
 
   <button
     type="button"
-    disabled
-    title="Próximamente"
-    class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-base-300 text-sm font-semibold text-base-content/70 disabled:cursor-not-allowed"
+    [disabled]="googleStatus() !== 'enabled' || loading()"
+    [title]="googleStatus() === 'enabled' ? 'Continuar con Google' : 'Inicio con Google no disponible'"
+    (click)="loginWithGoogle()"
+    class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-base-300 text-sm font-semibold text-base-content/70 transition-all duration-200 ease-out enabled:cursor-pointer enabled:hover:-translate-y-0.5 enabled:hover:bg-base-300/75 enabled:hover:shadow-md enabled:active:translate-y-0 enabled:active:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none motion-reduce:enabled:hover:translate-y-0"
   >
     <svg aria-hidden="true" class="size-4" viewBox="0 0 48 48">
       <path
@@ -60,4 +62,12 @@
     </svg>
     Continuar con Google
   </button>
+  @if (googleStatus() === 'checking') {
+    <p role="status" class="mt-3 text-center text-xs text-base-content/60">Comprobando Google…</p>
+  } @else if (googleStatus() === 'error') {
+    <p role="alert" class="mt-3 text-center text-xs text-error">No se pudo conectar con el servidor para comprobar Google.</p>
+    <button type="button" class="mt-2 w-full cursor-pointer text-center text-xs text-primary underline" (click)="checkGoogleConfig()">Reintentar</button>
+  } @else if (googleStatus() === 'disabled') {
+    <p role="status" class="mt-3 text-center text-xs text-base-content/60">El inicio con Google no está configurado en el servidor.</p>
+  }
 </form>

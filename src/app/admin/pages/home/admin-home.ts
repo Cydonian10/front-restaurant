@@ -1,0 +1,105 @@
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+@Component({
+  selector: 'app-admin-home',
+  imports: [RouterLink],
+  template: `<section class="intro">
+      <p class="eyebrow">● &nbsp; TU ESPACIO DE TRABAJO</p>
+      <h1>Hola, bienvenido</h1>
+      <p>Todo lo importante de tu negocio, en un solo lugar.</p>
+    </section>
+    <section class="overview">
+      <div>
+        <h2>● &nbsp; Resumen de administración</h2>
+        <p>Accede a las herramientas de tu espacio de trabajo.</p>
+      </div>
+      <a routerLink="/admin/usuarios" class="card"
+        ><span class="card-icon">♙</span><strong>Usuarios</strong
+        ><span>Gestiona los usuarios de tu negocio.</span
+        ><span class="card-action">Ir a usuarios →</span></a
+      >
+    </section>`,
+  styles: [
+    `
+      .intro {
+        padding-bottom: 30px;
+        border-bottom: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+      }
+      .eyebrow {
+        color: var(--color-secondary);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+      }
+      h1 {
+        font-size: clamp(32px, 4vw, 42px);
+        line-height: 1.15;
+        margin: 16px 0 12px;
+        font-weight: 600;
+      }
+      p {
+        color: color-mix(in srgb, var(--color-base-content) 60%, transparent);
+        font-size: 14px;
+      }
+      .overview {
+        padding-top: 30px;
+      }
+      h2 {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .overview p {
+        margin: 8px 0 22px;
+        font-size: 12px;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 330px;
+        min-height: 170px;
+        padding: 22px;
+        border: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+        border-radius: 14px;
+        background: var(--color-base-200);
+        color: inherit;
+        text-decoration: none;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: var(--color-primary);
+      }
+      .card-icon {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+        color: var(--color-secondary);
+        font-size: 24px;
+      }
+      .card strong {
+        font-size: 16px;
+      }
+      .card span:not(.card-icon) {
+        font-size: 12px;
+        opacity: 0.65;
+      }
+      .card .card-action {
+        color: var(--color-secondary);
+        opacity: 1 !important;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .card {
+          transition: none;
+        }
+      }
+    `,
+  ],
+})
+export class AdminHome {}
