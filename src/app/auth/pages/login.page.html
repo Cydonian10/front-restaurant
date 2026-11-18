@@ -1,0 +1,35 @@
+<main
+  class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-base-100 px-5 py-12 text-base-content before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle,var(--color-base-content)_0.7px,transparent_0.8px)] before:bg-size-[24px_24px] before:opacity-15"
+>
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-primary)_12%,transparent),transparent_70%)]"
+  ></div>
+  <div class="relative flex w-full max-w-md flex-col items-center">
+    <div class="mb-8 flex items-center gap-3" aria-label="Tienda Vasquez">
+      <span
+        aria-hidden="true"
+        class="flex size-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-xl font-semibold text-secondary"
+        >v.</span
+      >
+      <span class="text-sm">tienda <strong class="font-semibold">vasquez</strong></span>
+    </div>
+    <section
+      aria-labelledby="login-title"
+      class="w-full rounded-3xl border border-base-content/10 bg-base-200 px-6 py-10 shadow-[0_16px_48px_rgb(0_0_0/0.12)] sm:px-10"
+    >
+      <h1 id="login-title" class="text-center text-2xl font-semibold tracking-tight">
+        Qué bueno verte de nuevo
+      </h1>
+      <p class="mt-3 text-center text-sm text-base-content/60">
+        Iniciá sesión para entrar a tu panel.
+      </p>
+      <app-login-form />
+      <p class="mt-7 text-center text-sm leading-5 text-base-content/60">
+        ¿Todavía no tenés acceso?<br />Solicitá tu cuenta al responsable de la tienda.
+      </p>
+    </section>
+    <footer class="mt-8 text-center text-xs text-base-content/40">
+      © 2026 Tienda Vasquez · Hecho para seguir creciendo.
+    </footer>
+  </div>
+</main>

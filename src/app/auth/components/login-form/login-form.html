@@ -1,0 +1,63 @@
+<form class="mt-12" novalidate (submit)="onSubmit($event)">
+  <app-form-field
+    inputId="email"
+    label="Correo electrónico"
+    type="email"
+    autocomplete="email"
+    placeholder="nombre@ejemplo.com"
+    [field]="loginForm.email"
+    [submitted]="attempted()"
+  />
+  <app-form-field
+    class="mt-4"
+    inputId="password"
+    label="Contraseña"
+    type="password"
+    autocomplete="current-password"
+    placeholder="Tu contraseña"
+    [field]="loginForm.password"
+    [submitted]="attempted()"
+  />
+  <button
+    type="submit"
+    class="mt-5 h-12 w-full cursor-pointer rounded-xl bg-primary text-sm font-semibold text-primary-content transition-colors hover:bg-primary/85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
+  >
+    Iniciar sesión
+  </button>
+
+  @if (unavailable()) {
+    <p role="status" class="mt-3 text-center text-xs text-base-content/60">
+      El inicio de sesión aún no está disponible.
+    </p>
+  }
+
+  <div class="my-4 flex items-center gap-4 text-sm text-base-content/50" aria-hidden="true">
+    <span class="h-px flex-1 bg-base-content/10"></span>
+    <span>o continuá con</span>
+    <span class="h-px flex-1 bg-base-content/10"></span>
+  </div>
+
+  <button
+    type="button"
+    disabled
+    title="Próximamente"
+    class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-base-300 text-sm font-semibold text-base-content/70 disabled:cursor-not-allowed"
+  >
+    <svg aria-hidden="true" class="size-4" viewBox="0 0 48 48">
+      <path
+        fill="#4285F4"
+        d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 44.5c5.5 0 10.1-1.8 13.5-5l-6.6-5.1c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20.5 20.5 0 0 0 24 44.5z"
+      />
+      <path fill="#FBBC05" d="M12.6 27.9a12.3 12.3 0 0 1 0-7.8v-5.3H5.8a20.5 20.5 0 0 0 0 18.4z" />
+      <path
+        fill="#EA4335"
+        d="M24 11.7c3 0 5.7 1 7.8 3l5.9-5.9A19.8 19.8 0 0 0 24 3.5 20.5 20.5 0 0 0 5.8 14.8l6.8 5.3c1.6-4.8 6.1-8.4 11.4-8.4z"
+      />
+    </svg>
+    Continuar con Google
+  </button>
+</form>

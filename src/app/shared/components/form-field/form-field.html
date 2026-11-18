@@ -1,0 +1,48 @@
+<fieldset class="fieldset">
+  <legend class="fieldset-legend text-xs font-semibold">
+    <label [for]="inputId()"
+      >{{ label() }}
+      @if (field()().required()) {
+        <span class="ml-1 text-secondary" aria-hidden="true">*</span>
+      }
+    </label>
+  </legend>
+  <div class="relative">
+    <input
+      [id]="inputId()"
+      [type]="type() === 'password' && showPassword() ? 'text' : type()"
+      [attr.autocomplete]="autocomplete() ?? null"
+      [placeholder]="placeholder()"
+      [formField]="field()"
+      [attr.aria-invalid]="showError() ? 'true' : null"
+      [attr.aria-describedby]="showError() ? inputId() + '-error' : null"
+      [class.pr-12]="type() === 'password'"
+      class="input w-full rounded-xl [--input-background-hover:var(--color-base-300)]"
+    />
+    @if (type() === 'password') {
+      <button
+        type="button"
+        (click)="showPassword.set(!showPassword())"
+        [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+        [attr.aria-pressed]="showPassword()"
+        class="absolute inset-y-0 right-0 flex w-12 cursor-pointer items-center justify-center rounded-xl text-base-content/60 hover:text-base-content focus-visible:outline-2 focus-visible:outline-primary"
+      >
+        @if (showPassword()) {
+          <svg lucideEyeOff class="size-4" aria-hidden="true"></svg>
+        } @else {
+          <svg lucideEye class="size-4" aria-hidden="true"></svg>
+        }
+      </button>
+    }
+  </div>
+  @if (showError()) {
+    <p
+      [id]="inputId() + '-error'"
+      class="label origin-top text-xs text-error"
+      animate.enter="animate-[field-error-in_180ms_ease-out] motion-reduce:animate-none"
+      animate.leave="animate-[field-error-out_150ms_ease-in_forwards] motion-reduce:animate-none"
+    >
+      {{ field()().errors()[0]?.message }}
+    </p>
+  }
+</fieldset>
