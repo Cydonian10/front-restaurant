@@ -1,0 +1,14 @@
+<button
+  type="button"
+  class="fixed right-5 bottom-5 z-1000 inline-flex cursor-pointer items-center gap-2 rounded-(--radius-field) border border-base-content/12 bg-base-200 px-[0.85rem] py-[0.65rem] text-xs font-medium text-base-content shadow-[0_4px_14px_rgb(0_0_0/0.1)] transition-[background-color,border-color] duration-180 ease-in-out hover:bg-base-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none"
+  (click)="toggleTheme()"
+  [attr.aria-label]="isDark() ? 'Activar tema claro' : 'Activar tema oscuro'"
+>
+  @if (isDark()) {
+    <svg lucideSun class="size-[1.1rem] shrink-0" aria-hidden="true" stroke-width="1.7"></svg>
+    <span>Tema claro</span>
+  } @else {
+    <svg lucideMoon class="size-[1.1rem] shrink-0" aria-hidden="true" stroke-width="1.7"></svg>
+    <span>Tema oscuro</span>
+  }
+</button>
