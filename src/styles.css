@@ -4,6 +4,7 @@
 @import '@fontsource/fredoka/400.css';
 @import '@fontsource/fredoka/500.css';
 @import '@fontsource/fredoka/600.css';
+@import '@angular/cdk/overlay-prebuilt.css';
 @import 'tailwindcss';
 
 @plugin 'daisyui' {
@@ -167,3 +168,7 @@
     transform: translateY(-0.25rem);
   }
 }
+
+/* CDK provides focus management and positioning; these styles match the app theme. */
+.app-dialog-panel { max-height: calc(100dvh - 32px); }
+.app-dialog-backdrop { background: #0009; backdrop-filter: blur(3px); }

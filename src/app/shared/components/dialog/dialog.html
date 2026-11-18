@@ -1,0 +1,23 @@
+<section
+  class="dialog-shell flex max-h-[min(640px,calc(100dvh-32px))] flex-col overflow-hidden rounded-[18px] border border-base-content/10 bg-base-200 text-base-content shadow-[0_24px_70px_#0005]"
+>
+  <header
+    class="flex shrink-0 items-center justify-between gap-4 border-b border-base-content/10 px-6 py-5"
+  >
+    <h2 class="m-0 text-lg font-semibold">{{ title() }}</h2>
+    <button
+      class="grid size-8 cursor-pointer place-items-center rounded-[9px] border-0 bg-transparent text-2xl leading-none text-inherit hover:bg-base-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      type="button"
+      aria-label="Cerrar diálogo"
+      (click)="closed.emit()"
+    >
+      ×
+    </button>
+  </header>
+  <div class="min-h-0 overflow-y-auto p-6"><ng-content /></div>
+  <footer
+    class="flex shrink-0 items-center justify-end gap-2.5 border-t border-base-content/10 px-6 py-5"
+  >
+    <ng-content select="[dialog-footer]" />
+  </footer>
+</section>

@@ -100,7 +100,7 @@
       <span class="avatar">{{ profileStore.profile()?.name?.charAt(0) || '•' }}</span><span
         ><strong>{{ profileStore.profile()?.role || 'Cargando…' }}</strong
         ><small>{{ profileStore.profile()?.email }}</small></span
-      ><button type="button" (click)="auth.logout()">Salir</button>
+      ><button type="button" (click)="confirmLogout()">Salir</button>
     </div>
   </aside>
   <div class="main-area">
