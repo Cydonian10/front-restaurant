@@ -1,3 +1,147 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import '@fontsource/fredoka/300.css';
+@import '@fontsource/fredoka/400.css';
+@import '@fontsource/fredoka/500.css';
+@import '@fontsource/fredoka/600.css';
 @import 'tailwindcss';
+
+@plugin 'daisyui' {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: 'vasquez-light';
+  color-scheme: light;
+
+  --color-base-100: #f2f2f4;
+  --color-base-200: #ffffff;
+  --color-base-300: #f3f3f5;
+  --color-base-content: #202127;
+  --color-primary: #5159dc;
+  --color-primary-content: #ffffff;
+  --color-secondary: #626ae8;
+  --color-secondary-content: #ffffff;
+  --color-accent: #5159dc;
+  --color-accent-content: #ffffff;
+  --color-neutral: #e5e5e9;
+  --color-neutral-content: #202127;
+  --color-info: #2563a6;
+  --color-info-content: #ffffff;
+  --color-success: #16804a;
+  --color-success-content: #ffffff;
+  --color-warning: #aa6100;
+  --color-warning-content: #ffffff;
+  --color-error: #c93232;
+  --color-error-content: #ffffff;
+
+  --radius-field: 0.75rem;
+  --radius-selector: 2rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
+@plugin "daisyui/theme" {
+  name: 'vasquez-dark';
+  default: true;
+  color-scheme: dark;
+
+  --color-base-100: #08080a;
+  --color-base-200: #171719;
+  --color-base-300: #222224;
+  --color-base-content: #d4d4d8;
+  --color-primary: #4854c5;
+  --color-primary-content: #ffffff;
+  --color-secondary: #747fea;
+  --color-secondary-content: #ffffff;
+  --color-accent: #6272d9;
+  --color-accent-content: #ffffff;
+  --color-neutral: #27272a;
+  --color-neutral-content: #e4e4e7;
+  --color-info: #60a5fa;
+  --color-info-content: #08111f;
+  --color-success: #4ade80;
+  --color-success-content: #052e16;
+  --color-warning: #fbbf24;
+  --color-warning-content: #291b03;
+  --color-error: #c93232;
+  --color-error-content: #ffffff;
+
+  --radius-field: 0.75rem;
+  --radius-selector: 2rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
+@utility btn {
+  --depth: 0;
+  --noise: 0;
+  border-radius: var(--radius-field);
+  font-weight: 400;
+  text-shadow: none;
+  box-shadow: none;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    opacity 200ms ease,
+    translate 150ms ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--btn-color, var(--color-base-content));
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* The native input keeps working with Angular forms and HTML validation. */
+@utility input {
+  max-width: 100%;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  box-shadow: none;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 200ms ease;
+
+  &::placeholder {
+    color: var(--input-placeholder, color-mix(in srgb, var(--color-base-content) 60%, transparent));
+    opacity: 1;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--input-background-hover, var(--color-base-300));
+  }
+
+  &:focus-visible {
+    outline-color: var(--color-primary);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
