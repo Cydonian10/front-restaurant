@@ -1,0 +1,60 @@
+<fieldset
+  class="grid gap-4 rounded-2xl border border-base-content/10 bg-base-200 p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_1fr_1fr_8rem]"
+>
+  <legend class="sr-only">Filtros de usuarios</legend>
+
+  <label class="grid min-w-0 gap-1.5 text-sm">
+    Buscar
+    <input
+      #searchField
+      class="input w-full border-base-content/10"
+      type="search"
+      placeholder="Nombre, apellido o correo"
+      [value]="search()"
+      (input)="search.set(searchField.value)"
+    />
+  </label>
+
+  <label class="grid min-w-0 gap-1.5 text-sm">
+    Rol
+    <select
+      #roleField
+      class="select w-full border-base-content/10 bg-base-300 focus-visible:outline-primary"
+      [value]="role()"
+      (change)="changeRole(roleField.value)"
+    >
+      <option value="">Todos los roles</option>
+      @for (option of roles; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="grid min-w-0 gap-1.5 text-sm">
+    Correo verificado
+    <select
+      #verifiedField
+      class="select w-full border-base-content/10 bg-base-300 focus-visible:outline-primary"
+      [value]="emailVerified()"
+      (change)="changeVerification(verifiedField.value)"
+    >
+      <option value="">Cualquiera</option>
+      <option value="true">Verificado</option>
+      <option value="false">Sin verificar</option>
+    </select>
+  </label>
+
+  <label class="grid min-w-0 gap-1.5 text-sm">
+    Filas por página
+    <select
+      #limitField
+      class="select w-full border-base-content/10 bg-base-300 focus-visible:outline-primary"
+      [value]="limit()"
+      (change)="changeLimit(limitField.value)"
+    >
+      @for (value of limits; track value) {
+        <option [value]="value">{{ value }}</option>
+      }
+    </select>
+  </label>
+</fieldset>

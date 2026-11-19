@@ -87,14 +87,17 @@
           <div class="submenu"><span>Ventas</span></div>
         </div>
       </div>
-      <p class="nav-label">Administración</p>
-      <a
-        class="nav-link"
-        routerLink="/admin/usuarios"
-        routerLinkActive="active"
-        (click)="closeMenu()"
-        ><span class="icon">♙</span> Usuarios</a
-      >
+      @if (profileStore.profile()?.role === 'ADMIN') {
+        <p class="nav-label">Administración</p>
+        <a
+          class="nav-link"
+          routerLink="/admin/usuarios"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+          ><span class="icon" aria-hidden="true">♙</span> Usuarios</a
+        >
+      }
     </nav>
     <div class="sidebar-footer">
       <span class="avatar">{{ profileStore.profile()?.name?.charAt(0) || '•' }}</span><span

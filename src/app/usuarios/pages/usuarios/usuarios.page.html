@@ -1,10 +1,56 @@
-<section>
+<section aria-labelledby="usuarios-titulo">
   <p class="text-xs font-semibold tracking-widest text-secondary">ADMINISTRACIÓN</p>
-  <h1 class="mt-4 text-4xl font-semibold">Usuarios</h1>
-  <p class="mt-3 text-sm text-base-content/60">Gestiona los usuarios de tu espacio de trabajo.</p>
-  <div
-    class="mt-8 rounded-2xl border border-base-content/10 bg-base-200 p-6 text-sm text-base-content/60"
-  >
-    La gestión de usuarios estará disponible próximamente.
-  </div>
+  <h1 id="usuarios-titulo" class="mt-4 text-4xl font-semibold">Usuarios</h1>
+  <p class="mt-3 text-sm text-base-content/65">Consulta los usuarios de tu espacio de trabajo.</p>
+
+  @if (forbidden()) {
+    <div class="mt-8 rounded-2xl border border-base-content/10 bg-base-200 p-6" role="alert">
+      <h2 class="font-semibold">Acceso denegado</h2>
+      <p class="mt-1 text-sm text-base-content/70">
+        No tienes permiso para consultar los usuarios.
+      </p>
+    </div>
+  } @else {
+    <app-usuarios-filtros
+      class="mt-8"
+      [(search)]="search"
+      [(role)]="role"
+      [(emailVerified)]="emailVerified"
+      [(limit)]="limit"
+    />
+
+    <div class="mt-4 space-y-4">
+      @if (usuarios.isLoading()) {
+        <p class="rounded-2xl border border-base-content/10 bg-base-200 p-6 text-sm" role="status">
+          Cargando usuarios…
+        </p>
+      } @else if (usuarios.error()) {
+        <div class="rounded-2xl border border-base-content/10 bg-base-200 p-6">
+          <p role="alert">No se pudo cargar el listado de usuarios.</p>
+          <button class="btn btn-outline mt-3" type="button" (click)="usuarios.reload()">
+            Reintentar
+          </button>
+        </div>
+      } @else if (listado(); as result) {
+        @if (result.items.length > 0) {
+          <p class="text-sm text-base-content/70" role="status">
+            {{ result.total }} {{ result.total === 1 ? 'usuario' : 'usuarios' }} · Página
+            {{ result.page }} de {{ result.totalPages }}
+          </p>
+          <app-usuarios-tabla [items]="result.items" />
+        } @else {
+          <p
+            class="rounded-2xl border border-base-content/10 bg-base-200 p-6 text-sm"
+            role="status"
+          >
+            {{
+              result.total === 0 ? 'No se encontraron usuarios.' : 'No hay usuarios en esta página.'
+            }}
+          </p>
+        }
+      }
+
+      <app-paginador [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+    </div>
+  }
 </section>

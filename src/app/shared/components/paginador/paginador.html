@@ -1,0 +1,42 @@
+@if (totalPages() > 1 || (totalPages() === 1 && page() > 1)) {
+  <nav
+    aria-label="Paginación"
+    class="flex flex-wrap items-center justify-center gap-1.5 sm:justify-end"
+  >
+    <button
+      class="btn btn-ghost min-h-11 min-w-11 px-2.5"
+      type="button"
+      aria-label="Página anterior"
+      [disabled]="page() <= 1"
+      (click)="goTo(page() > totalPages() ? totalPages() : page() - 1)"
+    >
+      <span class="text-base" aria-hidden="true">‹</span>
+      <span class="hidden sm:inline" aria-hidden="true">Anterior</span>
+    </button>
+    @for (entry of pages(); track entry) {
+      @if (typeof entry === 'number') {
+        <button
+          class="btn btn-ghost min-h-11 min-w-11 px-2.5 tabular-nums aria-[current=page]:border-primary/25 aria-[current=page]:bg-primary/15 aria-[current=page]:font-semibold"
+          [attr.aria-label]="'Página ' + entry"
+          [attr.aria-current]="entry === page() ? 'page' : null"
+          type="button"
+          (click)="goTo(entry)"
+        >
+          {{ entry }}
+        </button>
+      } @else {
+        <span class="px-1 text-base-content/65" aria-hidden="true">…</span>
+      }
+    }
+    <button
+      class="btn btn-ghost min-h-11 min-w-11 px-2.5"
+      type="button"
+      aria-label="Página siguiente"
+      [disabled]="page() >= totalPages()"
+      (click)="goTo(page() + 1)"
+    >
+      <span class="hidden sm:inline" aria-hidden="true">Siguiente</span>
+      <span class="text-base" aria-hidden="true">›</span>
+    </button>
+  </nav>
+}

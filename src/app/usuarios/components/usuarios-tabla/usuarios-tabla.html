@@ -1,0 +1,41 @@
+<app-tabla-base label="Listado de usuarios">
+  <thead class="bg-base-300/50 text-base-content/75">
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Correo electrónico</th>
+      <th scope="col">Teléfono</th>
+      <th scope="col">Rol</th>
+      <th scope="col">Verificación</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (usuario of items(); track usuario.id) {
+      <tr class="hover:bg-base-300/50">
+        <td class="min-w-36">
+          @if (usuario.person; as person) {
+            {{ person.name }}{{ person.lastName ? ' ' + person.lastName : '' }}
+          } @else {
+            <span class="text-base-content/65">Sin nombre</span>
+          }
+        </td>
+        <td class="min-w-44 max-w-72 font-medium wrap-anywhere">{{ usuario.email }}</td>
+        <td class="whitespace-nowrap">
+          @if (usuario.person?.phone; as phone) {
+            {{ phone }}
+          } @else {
+            <span class="text-base-content/65">Sin teléfono</span>
+          }
+        </td>
+        <td>{{ roles[usuario.role] }}</td>
+        <td class="whitespace-nowrap">
+          <span
+            class="rounded-full border border-base-content/10 bg-base-300 px-2.5 py-1 text-xs font-medium"
+            [class.text-success]="usuario.emailVerified"
+          >
+            {{ usuario.emailVerified ? 'Verificado' : 'Sin verificar' }}
+          </span>
+        </td>
+      </tr>
+    }
+  </tbody>
+</app-tabla-base>
