@@ -8,7 +8,9 @@ import { ProfileStore } from '../../../auth/stores/profile.store';
 import { Paginador } from '../../../shared/components/paginador/paginador';
 import { UsuariosFiltros } from '../../components/usuarios-filtros/usuarios-filtros';
 import { UsuariosTabla } from '../../components/usuarios-tabla/usuarios-tabla';
-import { UsuariosLimite, UsuariosListado, UsuariosVerificacion } from '../../usuarios.types';
+import { UsuariosLimite } from '../../interfaces/usuarios-limite.type';
+import { UsuariosListado } from '../../interfaces/usuarios-listado.interface';
+import { UsuariosVerificacion } from '../../interfaces/usuarios-verificacion.type';
 
 @Component({
   selector: 'app-usuarios',

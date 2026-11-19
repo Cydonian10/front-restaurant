@@ -6,7 +6,7 @@ import { appConfig } from '../../../app.config';
 import { AuthService } from '../../../auth/access-control/auth.service';
 import { UserRole } from '../../../auth/interfaces/auth-user.interface';
 import { ProfileStore } from '../../../auth/stores/profile.store';
-import { UsuariosListado } from '../../usuarios.types';
+import { UsuariosListado } from '../../interfaces/usuarios-listado.interface';
 import { UsuariosPage } from './usuarios.page';
 
 const usersUrl = `${environment.api.replace(/\/$/, '')}/users`;

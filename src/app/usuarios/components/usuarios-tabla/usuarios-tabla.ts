@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { TablaBase } from '../../../shared/components/tabla-base/tabla-base';
-import { USUARIOS_ROLES, UsuarioListado } from '../../usuarios.types';
+import { USUARIOS_ROLES } from '../../constants/usuarios-roles.constants';
+import { UsuarioListado } from '../../interfaces/usuario-listado.interface';
 
 @Component({
   selector: 'app-usuarios-tabla',

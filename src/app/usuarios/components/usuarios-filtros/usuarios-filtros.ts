@@ -1,11 +1,9 @@
 import { Component, model } from '@angular/core';
 import { UserRole } from '../../../auth/interfaces/auth-user.interface';
-import {
-  USUARIOS_LIMITES,
-  USUARIOS_ROLES,
-  UsuariosLimite,
-  UsuariosVerificacion,
-} from '../../usuarios.types';
+import { USUARIOS_LIMITES } from '../../constants/usuarios-limites.constants';
+import { USUARIOS_ROLES } from '../../constants/usuarios-roles.constants';
+import { UsuariosLimite } from '../../interfaces/usuarios-limite.type';
+import { UsuariosVerificacion } from '../../interfaces/usuarios-verificacion.type';
 
 @Component({
   selector: 'app-usuarios-filtros',
