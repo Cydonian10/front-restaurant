@@ -1,15 +1,14 @@
-import { HttpErrorResponse, httpResource } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { UserRole } from '../../../auth/interfaces/auth-user.interface';
 import { ProfileStore } from '../../../auth/stores/profile.store';
 import { Paginador } from '../../../shared/components/paginador/paginador';
+import { UsuariosService } from '../../access-data/usuarios.service';
 import { UsuariosFiltros } from '../../components/usuarios-filtros/usuarios-filtros';
 import { UsuariosTabla } from '../../components/usuarios-tabla/usuarios-tabla';
 import { UsuariosLimite } from '../../interfaces/usuarios-limite.type';
-import { UsuariosListado } from '../../interfaces/usuarios-listado.interface';
 import { UsuariosVerificacion } from '../../interfaces/usuarios-verificacion.type';
 
 @Component({
@@ -20,6 +19,7 @@ import { UsuariosVerificacion } from '../../interfaces/usuarios-verificacion.typ
 })
 export class UsuariosPage {
   private readonly profileStore = inject(ProfileStore);
+  private readonly usuariosService = inject(UsuariosService);
   private readonly isAdmin = computed(() => this.profileStore.profile()?.role === 'ADMIN');
 
   protected readonly search = signal('');
@@ -40,21 +40,15 @@ export class UsuariosPage {
     emailVerified: this.emailVerified(),
     limit: this.limit(),
   }));
+
   protected readonly page = linkedSignal(() => {
     this.filters();
     return 1;
   });
 
-  protected readonly usuarios = httpResource<UsuariosListado>(() => {
+  protected readonly usuarios = this.usuariosService.listado(() => {
     if (!this.isAdmin()) return undefined;
-
-    const { search, role, emailVerified, limit } = this.filters();
-    const params: Record<string, string | number> = { page: this.page(), limit };
-    if (search) params['search'] = search;
-    if (role) params['role'] = role;
-    if (emailVerified) params['emailVerified'] = emailVerified;
-
-    return { url: `${environment.api.replace(/\/$/, '')}/users`, params };
+    return { ...this.filters(), page: this.page() };
   });
 
   protected readonly listado = computed(() =>
