@@ -1,0 +1,9 @@
+@if (isAdmin()) {
+  <h1>Productos</h1>
+  <p>La gestión de productos estará disponible aquí.</p>
+} @else {
+  <section role="alert">
+    <h1>Acceso denegado</h1>
+    <p>Necesitas permisos de administrador para acceder a productos.</p>
+  </section>
+}

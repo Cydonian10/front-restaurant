@@ -51,7 +51,10 @@
       >
         <div>
           <div class="submenu">
-            <span>Productos</span><span>Categorías</span><span>Marcas</span
+            @if (profileStore.profile()?.role === 'ADMIN') {
+              <a routerLink="/admin/productos" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Productos</a>
+            }
+            <span>Categorías</span><span>Marcas</span
             ><span>Unidades de medida</span>
           </div>
         </div>

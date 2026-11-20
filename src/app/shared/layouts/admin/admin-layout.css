@@ -242,10 +242,18 @@
   margin: 2px 0 2px 20px;
   border-left: 1px solid color-mix(in srgb, var(--color-base-content) 12%, transparent);
 }
-.submenu span {
+.submenu span,
+.submenu a {
   padding: 12px 0 12px 21px;
   font-size: 13px;
   color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
+}
+.submenu a {
+  text-decoration: none;
+}
+.submenu a:hover,
+.submenu a.active {
+  color: var(--color-secondary);
 }
 @media (prefers-reduced-motion: reduce) {
   .submenu-wrap,
