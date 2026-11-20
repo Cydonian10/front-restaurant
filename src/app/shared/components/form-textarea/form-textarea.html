@@ -1,0 +1,28 @@
+<fieldset class="fieldset">
+  <legend class="fieldset-legend text-xs font-semibold">
+    <label [for]="inputId()"
+      >{{ label() }}
+      @if (field()().required()) {
+        <span class="ml-1 text-secondary" aria-hidden="true">*</span>
+      }
+    </label>
+  </legend>
+  <textarea
+    [id]="inputId()"
+    [formField]="field()"
+    [placeholder]="placeholder()"
+    [attr.aria-invalid]="showError() ? 'true' : null"
+    [attr.aria-describedby]="showError() ? inputId() + '-error' : null"
+    class="textarea input w-full rounded-xl [--input-background-hover:var(--color-base-300)]"
+  ></textarea>
+  @if (showError()) {
+    <p
+      [id]="inputId() + '-error'"
+      class="label origin-top text-xs text-error"
+      animate.enter="animate-[field-error-in_180ms_ease-out] motion-reduce:animate-none"
+      animate.leave="animate-[field-error-out_150ms_ease-in_forwards] motion-reduce:animate-none"
+    >
+      {{ field()().errors()[0]?.message }}
+    </p>
+  }
+</fieldset>

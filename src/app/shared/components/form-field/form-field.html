@@ -13,6 +13,7 @@
       [type]="type() === 'password' && showPassword() ? 'text' : type()"
       [attr.autocomplete]="autocomplete() ?? null"
       [placeholder]="placeholder()"
+      [attr.inputmode]="inputMode()"
       [formField]="field()"
       [attr.aria-invalid]="showError() ? 'true' : null"
       [attr.aria-describedby]="showError() ? inputId() + '-error' : null"

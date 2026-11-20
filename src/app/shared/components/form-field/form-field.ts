@@ -14,6 +14,7 @@ export class AppFormField<T extends string | number | null> {
   readonly label = input.required<string>();
   readonly type = input<'text' | 'email' | 'password' | 'number'>('text');
   readonly placeholder = input('');
+  readonly inputMode = input<'text' | 'decimal'>('text');
   readonly autocomplete = input<string>();
   readonly submitted = input(false);
   protected readonly showPassword = signal(false);

@@ -1,0 +1,11 @@
+.dropzone { display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem; border: 1.5px dashed color-mix(in srgb, var(--color-base-content) 28%, transparent); border-radius: var(--radius-field); background: var(--color-base-300); transition: border-color .18s, background .18s; }
+.dropzone.dragging, .dropzone:focus-within { border-color: var(--color-primary); background: var(--color-base-300); outline: 2px solid var(--color-primary); outline-offset: -2px; }
+.dropzone.disabled { opacity: .55; }
+.drop-icon { display: grid; place-items: center; flex: none; width: 2.5rem; height: 2.5rem; border-radius: .75rem; background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-secondary); font-size: 1.5rem; }
+.drop-content { min-width: 0; }
+.drop-label { display: block; font-weight: 600; font-size: .9rem; }
+.drop-hint { margin-top: .25rem; color: color-mix(in srgb, var(--color-base-content) 65%, transparent); font-size: .8rem; }
+.drop-file { margin-top: .5rem; overflow-wrap: anywhere; color: var(--color-secondary); font-size: .85rem; }
+input { display: block; max-width: 100%; margin-top: .65rem; font-size: .8rem; }
+input::file-selector-button { margin-right: .75rem; padding: .4rem .75rem; border: 0; border-radius: .5rem; background: var(--color-base-300); color: var(--color-base-content); cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .dropzone { transition: none; } }
