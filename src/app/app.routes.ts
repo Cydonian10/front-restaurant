@@ -19,6 +19,10 @@ export const routes: Routes = [
         loadComponent: () => import('./productos/pages/productos/productos').then((m) => m.Productos),
       },
       {
+        path: 'productos/nuevo',
+        loadComponent: () => import('./productos/pages/crear-producto/crear-producto').then((m) => m.CrearProducto),
+      },
+      {
         path: 'usuarios',
         loadChildren: () => import('./usuarios/usuarios.routes').then((r) => r.USUARIOS_ROUTE),
       },

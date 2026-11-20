@@ -1,6 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
+import { LucideUploadCloud } from '@lucide/angular';
 
-@Component({ selector: 'app-file-dropzone', templateUrl: './file-dropzone.html', styleUrl: './file-dropzone.css', host: { class: 'block' } })
+@Component({ selector: 'app-file-dropzone', imports: [LucideUploadCloud], templateUrl: './file-dropzone.html', styleUrl: './file-dropzone.css', host: { class: 'block' } })
 export class FileDropzone {
   readonly inputId = input.required<string>();
   readonly label = input.required<string>();

@@ -1,18 +1,16 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
-import { form, maxLength, pattern, required } from '@angular/forms/signals';
+import { RouterLink } from '@angular/router';
+import { LucidePlus } from '@lucide/angular';
 import { ProfileStore } from '../../../auth/stores/profile.store';
 import { FileDropzone } from '../../../shared/components/file-dropzone/file-dropzone';
-import { FormSelect } from '../../../shared/components/form-select/form-select';
-import { FormTextarea } from '../../../shared/components/form-textarea/form-textarea';
-import { AppFormField } from '../../../shared/components/form-field/form-field';
 import { Paginador } from '../../../shared/components/paginador/paginador';
 import { ProductosService } from '../../access-data/productos.service';
 import type { Producto } from '../../interfaces/producto.interface';
 import type { ProductoTipo } from '../../interfaces/producto-tipo.type';
 
-@Component({ selector: 'app-productos', imports: [CurrencyPipe, Paginador, AppFormField, FormSelect, FormTextarea, FileDropzone], templateUrl: './productos.html', styleUrl: './productos.css' })
+@Component({ selector: 'app-productos', imports: [CurrencyPipe, Paginador, FileDropzone, RouterLink, LucidePlus], templateUrl: './productos.html', styleUrl: './productos.css' })
 export class Productos {
   private readonly profile = inject(ProfileStore);
   private readonly service = inject(ProductosService);
@@ -31,17 +29,6 @@ export class Productos {
   protected readonly listado = computed(() => this.productos.hasValue() ? this.productos.value() : undefined);
   protected readonly forbidden = computed(() => !this.isAdmin() || (this.productos.error() instanceof HttpErrorResponse && (this.productos.error() as HttpErrorResponse).status === 403));
   protected readonly totalPages = linkedSignal({ source: () => ({ tipo: this.tipo(), listado: this.listado() }), computation: ({ tipo, listado }, previous): number => listado?.totalPages ?? (previous?.source.tipo === tipo ? previous.value : 0) });
-  protected readonly mostrarFormulario = signal(false);
-  protected readonly modelo = signal({ nombre: '', descripcion: '', precio: '', tipo: 'PLATO_FONDO' as ProductoTipo });
-  protected readonly formulario = form(this.modelo, (schema) => {
-    required(schema.nombre, { message: 'Ingresa un nombre.' });
-    maxLength(schema.nombre, 255, { message: 'El nombre no puede superar 255 caracteres.' });
-    required(schema.precio, { message: 'Ingresa un precio.' });
-    pattern(schema.precio, /^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/, { message: 'Ingresa un precio válido con hasta dos decimales.' });
-  });
-  protected readonly intentado = signal(false);
-  protected readonly imagen = signal<File | undefined>(undefined);
-  protected readonly guardando = signal(false);
   protected readonly ocupado = signal<string | null>(null);
   protected readonly mensaje = signal('');
   protected readonly error = signal('');
@@ -54,20 +41,6 @@ export class Productos {
       if (error.status === 400 || error.status === 413) return 'Los datos o la imagen no son válidos. Revísalos e inténtalo de nuevo.';
     }
     return 'No se pudo completar la operación. Inténtalo de nuevo.';
-  }
-  protected crear(event: Event): void {
-    event.preventDefault();
-    if (!this.isAdmin() || this.guardando()) return;
-    this.intentado.set(true);
-    const data = this.modelo(); const nombre = data.nombre.trim();
-    if (!nombre || nombre.length > 255 || !/^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/.test(data.precio) || !this.imagenValida(this.imagen())) {
-      this.error.set('Ingresa un nombre válido, un precio no negativo con hasta dos decimales y una imagen JPG, PNG o WebP de hasta 5 MB.'); return;
-    }
-    this.error.set(''); this.mensaje.set(''); this.guardando.set(true);
-    this.service.crear({ ...data, nombre, descripcion: data.descripcion.trim() || undefined, imagen: this.imagen() }).subscribe({
-      next: () => { this.guardando.set(false); this.modelo.set({ nombre: '', descripcion: '', precio: '', tipo: 'PLATO_FONDO' }); this.imagen.set(undefined); this.mostrarFormulario.set(false); this.intentado.set(false); this.mensaje.set('Producto creado correctamente.'); if (this.page() !== 1) this.page.set(1); else this.productos.reload(); },
-      error: (err: unknown) => { this.guardando.set(false); this.error.set(this.errorOperacion(err)); },
-    });
   }
   protected disponibilidad(producto: Producto): void {
     if (!this.isAdmin() || this.ocupado()) return;

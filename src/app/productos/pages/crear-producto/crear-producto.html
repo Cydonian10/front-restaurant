@@ -1,0 +1,19 @@
+<section class="crear-producto" aria-labelledby="titulo-crear">
+  <a routerLink="/admin/productos" class="volver"><svg lucideArrowLeft class="size-4" aria-hidden="true"></svg> Volver a la carta</a>
+  <h1 id="titulo-crear">Nuevo producto</h1>
+  @if (!isAdmin()) {
+    <p role="alert">Acceso denegado. Necesitas permisos de administrador.</p>
+  } @else {
+    <p class="intro">Agrega un producto a la carta de tu restaurante.</p>
+    @if (mensaje()) { <p role="status" class="mt-4">{{ mensaje() }}</p> }
+    @if (error()) { <p role="alert" class="mt-4 text-error">{{ error() }}</p> }
+    <form class="producto-form" (submit)="crear($event)">
+      <app-form-field inputId="producto-nombre" label="Nombre" [field]="formulario.nombre" [submitted]="intentado()" />
+      <app-form-textarea class="campo-ancho" inputId="producto-descripcion" label="Descripción" [field]="formulario.descripcion" [submitted]="intentado()" />
+      <app-form-field inputId="producto-precio" label="Precio" inputMode="decimal" placeholder="0.00" [field]="formulario.precio" [submitted]="intentado()" />
+      <app-form-select inputId="producto-tipo" label="Tipo" [field]="formulario.tipo" [options]="tipos" [submitted]="intentado()" />
+      <app-file-dropzone class="campo-ancho" inputId="producto-imagen" label="Imagen opcional" hint="JPG, PNG o WebP · máximo 5 MB" accept="image/jpeg,image/png,image/webp" [selectedFile]="imagen()" [disabled]="guardando()" (fileChange)="imagen.set($event)" />
+      <div class="acciones campo-ancho"><button class="btn btn-primary" type="submit" [disabled]="guardando()"><svg lucidePlus class="size-4" aria-hidden="true"></svg>{{ guardando() ? 'Guardando…' : 'Crear producto' }}</button><a class="btn btn-ghost" routerLink="/admin/productos">Cancelar</a></div>
+    </form>
+  }
+</section>

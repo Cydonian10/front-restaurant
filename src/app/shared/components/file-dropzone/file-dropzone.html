@@ -1,7 +1,7 @@
 <fieldset class="fieldset">
   <legend class="fieldset-legend text-xs font-semibold"><label [for]="inputId()">{{ label() }}</label></legend>
 <div class="dropzone" [class.dragging]="dragging()" [class.disabled]="disabled()" (dragover)="drag($event)" (dragleave)="dragging.set(false)" (drop)="drop($event)">
-  <span class="drop-icon" aria-hidden="true">↑</span>
+  <span class="drop-icon" aria-hidden="true"><svg lucideUploadCloud class="size-5"></svg></span>
   <div class="drop-content">
     <span class="drop-label">Selecciona un archivo</span>
     <p class="drop-hint">Arrastra un archivo aquí o selecciónalo desde tu equipo.</p>

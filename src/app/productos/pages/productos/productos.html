@@ -4,31 +4,12 @@
     <div role="alert" class="mt-6">Acceso denegado. Necesitas permisos de administrador.</div>
   } @else {
     <p class="intro">Organiza tus productos y mantén tu carta actualizada.</p>
-    <button
-      type="button"
-      class="btn btn-primary mt-4"
-      (click)="mostrarFormulario.set(!mostrarFormulario())"
-      [attr.aria-expanded]="mostrarFormulario()"
-    >
-      {{ mostrarFormulario() ? 'Cerrar formulario' : 'Agregar producto' }}
-    </button>
+    <a routerLink="/admin/productos/nuevo" class="btn btn-primary mt-4"><svg lucidePlus class="size-4" aria-hidden="true"></svg> Agregar producto</a>
     @if (mensaje()) {
       <p role="status" class="mt-4">{{ mensaje() }}</p>
     }
     @if (error()) {
       <p role="alert" class="mt-4 text-error">{{ error() }}</p>
-    }
-    @if (mostrarFormulario()) {
-      <form class="producto-form" (submit)="crear($event)">
-        <app-form-field inputId="producto-nombre" label="Nombre" [field]="formulario.nombre" [submitted]="intentado()" />
-        <app-form-textarea class="campo-ancho" inputId="producto-descripcion" label="Descripción" [field]="formulario.descripcion" [submitted]="intentado()" />
-        <app-form-field inputId="producto-precio" label="Precio" inputMode="decimal" placeholder="0.00" [field]="formulario.precio" [submitted]="intentado()" />
-        <app-form-select inputId="producto-tipo" label="Tipo" [field]="formulario.tipo" [options]="tipos" [submitted]="intentado()" />
-        <app-file-dropzone class="campo-ancho" inputId="producto-imagen" label="Imagen opcional" hint="JPG, PNG o WebP · máximo 5 MB" accept="image/jpeg,image/png,image/webp" [selectedFile]="imagen()" [disabled]="guardando()" (fileChange)="imagen.set($event)" />
-        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
-          {{ guardando() ? 'Guardando…' : 'Crear producto' }}
-        </button>
-      </form>
     }
     <div class="filtros" role="group" aria-label="Filtrar por tipo">
       <button
