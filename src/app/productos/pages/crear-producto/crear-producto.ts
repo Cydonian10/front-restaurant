@@ -9,7 +9,7 @@ import { FormTextarea } from '../../../shared/components/form-textarea/form-text
 import { FormSelect } from '../../../shared/components/form-select/form-select';
 import { FileDropzone } from '../../../shared/components/file-dropzone/file-dropzone';
 import { ProductosService } from '../../access-data/productos.service';
-import type { ProductoTipo } from '../../interfaces/producto-tipo.type';
+import { PRODUCTO_TIPOS, type ProductoTipo } from '../../interfaces/producto-tipo.type';
 
 @Component({
   selector: 'app-crear-producto',
@@ -30,12 +30,7 @@ export class CrearProducto {
   private readonly profile = inject(ProfileStore);
   private readonly service = inject(ProductosService);
   protected readonly isAdmin = computed(() => this.profile.profile()?.role === 'ADMIN');
-  protected readonly tipos: { value: ProductoTipo; label: string }[] = [
-    { value: 'PLATO_FONDO', label: 'Platos de fondo' },
-    { value: 'BEBIDA', label: 'Bebidas' },
-    { value: 'EXTRA', label: 'Extras' },
-    { value: 'POSTRE', label: 'Postres' },
-  ];
+  protected readonly tipos = PRODUCTO_TIPOS;
   protected readonly modelo = signal({
     nombre: '',
     descripcion: '',

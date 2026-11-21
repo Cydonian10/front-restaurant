@@ -81,13 +81,15 @@
                   <tr class="edicion-fila"><td colspan="5">
                     <h2 class="edicion-titulo">Editar {{ producto.nombre }}</h2>
               <form class="edicion" (submit)="$event.preventDefault(); guardarEdicion()">
-                <label>Nombre <input class="input input-bordered w-full" name="nombre" [ngModel]="edicion().nombre" (ngModelChange)="edicion.update(v => ({ ...v, nombre: $event }))" required maxlength="255" /></label>
-                <label>Descripción <textarea class="textarea textarea-bordered w-full" name="descripcion" [ngModel]="edicion().descripcion" (ngModelChange)="edicion.update(v => ({ ...v, descripcion: $event }))"></textarea></label>
-                <label>Precio <input class="input input-bordered w-full" name="precio" inputmode="decimal" [ngModel]="edicion().precio" (ngModelChange)="edicion.update(v => ({ ...v, precio: $event }))" required /></label>
-                <label>Tipo <select class="select select-bordered w-full" name="tipo" [ngModel]="edicion().tipo" (ngModelChange)="edicion.update(v => ({ ...v, tipo: $event }))">@for (opcion of tipos; track opcion.value) { <option [value]="opcion.value">{{ opcion.label }}</option> }</select></label>
+                <app-form-field inputId="editar-nombre" label="Nombre" [field]="formularioEdicion.nombre" [submitted]="intentado()" />
+                <app-form-textarea inputId="editar-descripcion" label="Descripción" [field]="formularioEdicion.descripcion" [submitted]="intentado()" />
+                <app-form-field inputId="editar-precio" label="Precio" inputMode="decimal" placeholder="0.00" [field]="formularioEdicion.precio" [submitted]="intentado()" />
+                <app-form-select inputId="editar-tipo" label="Tipo" [field]="formularioEdicion.tipo" [options]="tipos" [submitted]="intentado()" />
                 <app-file-dropzone class="edicion-imagen" inputId="editar-imagen" label="Agregar o reemplazar imagen" hint="JPG, PNG o WebP · máximo 5 MB" accept="image/jpeg,image/png,image/webp" [selectedFile]="imagenEdicion()" [disabled]="!!ocupado()" (fileChange)="imagenEdicion.set($event)" />
+                <div class="edicion-acciones">
                 <button class="btn btn-primary" type="submit" [disabled]="!!ocupado()">{{ ocupado() ? 'Guardando…' : 'Guardar cambios' }}</button>
                 <button class="btn btn-ghost" type="button" [disabled]="!!ocupado()" (click)="editando.set(null)">Cancelar</button>
+                </div>
               </form>
                   </td></tr>
                 }

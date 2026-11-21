@@ -52,11 +52,14 @@ describe('Productos', () => {
     await fixture.whenStable(); fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Sin imagen');
     (Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[]).find(b => b.textContent?.trim() === 'Editar')!.click(); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
-    const input = fixture.nativeElement.querySelector('input[name="nombre"]') as HTMLInputElement;
-    input.value = 'Nueva sopa'; input.dispatchEvent(new Event('input', { bubbles: true })); fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('#editar-nombre') as HTMLInputElement;
+    input.value = 'Nueva sopa'; input.dispatchEvent(new Event('input', { bubbles: true }));
+    const select = fixture.nativeElement.querySelector('#editar-tipo') as HTMLSelectElement;
+    expect(Array.from(select.options).map(option => option.value)).toEqual(expect.arrayContaining(['MENU', 'BEBIDA_MENU']));
+    select.value = 'BEBIDA_MENU'; select.dispatchEvent(new Event('input', { bubbles: true })); fixture.detectChanges();
     fixture.nativeElement.querySelector('.edicion').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const req = http.expectOne(`${environment.api.replace(/\/$/, '')}/products/123`);
-    expect(req.request.method).toBe('PATCH'); expect((req.request.body as FormData).get('nombre')).toBe('Nueva sopa');
+    expect(req.request.method).toBe('PATCH'); expect((req.request.body as FormData).get('nombre')).toBe('Nueva sopa'); expect((req.request.body as FormData).get('tipo')).toBe('BEBIDA_MENU');
     req.flush({}, { status: 500, statusText: 'Error' }); fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('No se pudo completar'); expect(input.value).toBe('Nueva sopa');
   });

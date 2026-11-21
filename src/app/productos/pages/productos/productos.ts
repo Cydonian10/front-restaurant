@@ -1,20 +1,25 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, linkedSignal, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { form, maxLength, pattern, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { LucideArchive, LucideEye, LucideEyeOff, LucidePencil, LucidePlus } from '@lucide/angular';
 import { ProfileStore } from '../../../auth/stores/profile.store';
+import { AppFormField } from '../../../shared/components/form-field/form-field';
+import { FormTextarea } from '../../../shared/components/form-textarea/form-textarea';
+import { FormSelect } from '../../../shared/components/form-select/form-select';
 import { FileDropzone } from '../../../shared/components/file-dropzone/file-dropzone';
 import { Paginador } from '../../../shared/components/paginador/paginador';
 import { ProductosService } from '../../access-data/productos.service';
 import type { Producto } from '../../interfaces/producto.interface';
-import type { ProductoTipo } from '../../interfaces/producto-tipo.type';
+import { PRODUCTO_TIPOS, type ProductoTipo } from '../../interfaces/producto-tipo.type';
 
 @Component({
   selector: 'app-productos',
   imports: [
-    FormsModule,
+    AppFormField,
+    FormTextarea,
+    FormSelect,
     CurrencyPipe,
     Paginador,
     FileDropzone,
@@ -33,12 +38,7 @@ export class Productos {
   private readonly profile = inject(ProfileStore);
   private readonly service = inject(ProductosService);
   protected readonly isAdmin = computed(() => this.profile.profile()?.role === 'ADMIN');
-  protected readonly tipos: { value: ProductoTipo; label: string }[] = [
-    { value: 'PLATO_FONDO', label: 'Platos de fondo' },
-    { value: 'BEBIDA', label: 'Bebidas' },
-    { value: 'EXTRA', label: 'Extras' },
-    { value: 'POSTRE', label: 'Postres' },
-  ];
+  protected readonly tipos = PRODUCTO_TIPOS;
   protected readonly tipo = signal<ProductoTipo | ''>('');
   protected readonly page = linkedSignal(() => {
     this.tipo();
@@ -74,6 +74,13 @@ export class Productos {
     precio: '',
     tipo: 'PLATO_FONDO' as ProductoTipo,
   });
+  protected readonly formularioEdicion = form(this.edicion, (schema) => {
+    required(schema.nombre, { message: 'Ingresa un nombre.' });
+    maxLength(schema.nombre, 255, { message: 'El nombre no puede superar 255 caracteres.' });
+    required(schema.precio, { message: 'Ingresa un precio.' });
+    pattern(schema.precio, /^(?:0|[1-9]\d{0,9})(?:\.\d{1,2})?$/, { message: 'Ingresa un precio válido con hasta dos decimales.' });
+  });
+  protected readonly intentado = signal(false);
   protected readonly imagenEdicion = signal<File | undefined>(undefined);
   protected readonly error = signal('');
   protected etiqueta(tipo: ProductoTipo): string {
@@ -105,6 +112,7 @@ export class Productos {
       tipo: producto.tipo,
     });
     this.imagenEdicion.set(undefined);
+    this.intentado.set(false);
     this.error.set('');
     this.mensaje.set('');
   }
@@ -113,6 +121,7 @@ export class Productos {
     const data = this.edicion();
     const imagen = this.imagenEdicion();
     if (!producto || !this.isAdmin() || this.ocupado()) return;
+    this.intentado.set(true);
     const nombre = data.nombre.trim();
     if (
       !nombre ||

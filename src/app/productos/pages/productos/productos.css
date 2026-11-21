@@ -72,9 +72,8 @@ h1 {
 .edicion-fila { background: color-mix(in srgb, var(--color-primary) 5%, var(--color-base-200)); }
 .edicion-titulo { font-weight: 600; }
 .edicion { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1rem; margin-top: 1rem; }
-.edicion label { display: grid; gap: .35rem; }
 .edicion-imagen { grid-column: 1 / -1; min-width: 0; }
-.edicion button { justify-self: start; }
+.edicion-acciones { grid-column: 1 / -1; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .75rem;}
 @media (max-width: 850px) {
   .productos-tabla, .productos-tabla tbody, .productos-tabla tr, .productos-tabla td { display: block; }
   .productos-tabla thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
