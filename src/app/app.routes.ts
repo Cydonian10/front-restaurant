@@ -15,12 +15,18 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/pages/home/admin-home').then((m) => m.AdminHome),
       },
       {
+        path: 'mesas',
+        loadComponent: () => import('./mesas/pages/plano/plano').then((m) => m.Plano),
+      },
+      {
         path: 'productos',
-        loadComponent: () => import('./productos/pages/productos/productos').then((m) => m.Productos),
+        loadComponent: () =>
+          import('./productos/pages/productos/productos').then((m) => m.Productos),
       },
       {
         path: 'productos/nuevo',
-        loadComponent: () => import('./productos/pages/crear-producto/crear-producto').then((m) => m.CrearProducto),
+        loadComponent: () =>
+          import('./productos/pages/crear-producto/crear-producto').then((m) => m.CrearProducto),
       },
       {
         path: 'usuarios',

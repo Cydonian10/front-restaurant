@@ -22,6 +22,20 @@
         (click)="closeMenu()"
         ><span class="icon">▦</span> Inicio</a
       >
+      @if (
+        profileStore.profile()?.role === 'ADMIN' ||
+        profileStore.profile()?.role === 'MOZO' ||
+        profileStore.profile()?.role === 'COCINA'
+      ) {
+        <a
+          class="nav-link"
+          routerLink="/admin/mesas"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          (click)="closeMenu()"
+          ><span class="icon">▦</span> Mesas y zonas</a
+        >
+      }
       <p class="nav-label">Espacio de trabajo</p>
       <button
         class="nav-link nav-toggle"
@@ -52,10 +66,15 @@
         <div>
           <div class="submenu">
             @if (profileStore.profile()?.role === 'ADMIN') {
-              <a routerLink="/admin/productos" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Productos</a>
+              <a
+                routerLink="/admin/productos"
+                routerLinkActive="active"
+                ariaCurrentWhenActive="page"
+                (click)="closeMenu()"
+                >Productos</a
+              >
             }
-            <span>Categorías</span><span>Marcas</span
-            ><span>Unidades de medida</span>
+            <span>Categorías</span><span>Marcas</span><span>Unidades de medida</span>
           </div>
         </div>
       </div>

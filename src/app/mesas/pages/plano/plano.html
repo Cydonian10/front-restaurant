@@ -1,0 +1,61 @@
+@if (!autorizado) {
+  <p role="alert">Acceso denegado. No tienes permiso para ver las mesas.</p>
+} @else {
+  <div class="heading">
+    <p>EL CORAZÓN DE TU RESTAURANTE</p>
+    <h1>Mesas y zonas</h1>
+    <span>Todo lo que pasa en tu salón, de un vistazo.</span>
+  </div>
+  @if (estado() === 'cargando') {
+    <p role="status">Cargando mesas y zonas…</p>
+  } @else if (estado() === 'error') {
+    <div role="alert">
+      No se pudieron cargar las mesas. <button class="btn mt-2" type="button" (click)="cargar()">Reintentar</button>
+    </div>
+  } @else if (zonas().length === 0) {
+    <p>No hay zonas disponibles.</p>
+  } @else {
+    <section class="panel">
+      <h2>Plano del restaurante</h2>
+      <p>Consulta las mesas de cada zona.</p>
+      <nav class="tabs" aria-label="Zonas">
+        @for (zona of zonas(); track zona.id) {
+          <button
+            type="button"
+            [class.active]="seleccion() === zona.id"
+            [attr.aria-pressed]="seleccion() === zona.id"
+            (click)="seleccion.set(zona.id)"
+          >
+            {{ zona.name }}
+          </button>
+        }
+      </nav>
+      @for (zona of zonas(); track zona.id) {
+        @if (seleccion() === zona.id) {
+          <h3>{{ zona.name }} · {{ zona.tables.length }} mesas</h3>
+          @if (zona.tables.length === 0) {
+            <p>No hay mesas en esta zona.</p>
+          } @else {
+            <div class="scroll">
+              <div class="plano" [style.width.px]="ancho(zona)" [style.height.px]="alto(zona)">
+                @for (mesa of zona.tables; track mesa.id) {
+                  <div
+                    class="mesa"
+                    [class.ocupada]="mesa.status === 'OCCUPIED'"
+                    [class.fuera]="mesa.status === 'OUT_OF_SERVICE'"
+                    [style.left.px]="mesa.positionX"
+                    [style.top.px]="mesa.positionY"
+                  >
+                    <span aria-hidden="true">▦</span><strong>Mesa {{ mesa.number }}</strong
+                    ><small>{{ mesa.capacity }} personas</small
+                    ><small>{{ etiqueta(mesa.status) }}</small>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      }
+    </section>
+  }
+}
