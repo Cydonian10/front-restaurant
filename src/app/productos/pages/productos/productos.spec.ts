@@ -45,4 +45,32 @@ describe('Productos', () => {
     await fixture.whenStable(); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('No disponible');
   });
 
+  it('muestra marcador y conserva la edición si el servidor falla', async () => {
+    const fixture = TestBed.createComponent(Productos); fixture.detectChanges();
+    const item = { id: '123', nombre: 'Sopa', descripcion: null, precio: '12.00', tipo: 'PLATO_FONDO', principal: true, disponible: true, imageUrl: null, createdAt: '', updatedAt: '' };
+    http.expectOne(r => r.url === url).flush({ items: [item], page: 1, limit: 10, total: 1, totalPages: 1 });
+    await fixture.whenStable(); fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Sin imagen');
+    (Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[]).find(b => b.textContent?.trim() === 'Editar')!.click(); fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input[name="nombre"]') as HTMLInputElement;
+    input.value = 'Nueva sopa'; input.dispatchEvent(new Event('input', { bubbles: true })); fixture.detectChanges();
+    fixture.nativeElement.querySelector('.edicion').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const req = http.expectOne(`${environment.api.replace(/\/$/, '')}/products/123`);
+    expect(req.request.method).toBe('PATCH'); expect((req.request.body as FormData).get('nombre')).toBe('Nueva sopa');
+    req.flush({}, { status: 500, statusText: 'Error' }); fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('No se pudo completar'); expect(input.value).toBe('Nueva sopa');
+  });
+  it('solicita confirmación antes de dar de baja y recarga al completar', async () => {
+    const fixture = TestBed.createComponent(Productos); fixture.detectChanges();
+    const item = { id: '123', nombre: 'Sopa', descripcion: null, precio: '12.00', tipo: 'PLATO_FONDO', principal: true, disponible: true, imageUrl: null, createdAt: '', updatedAt: '' };
+    http.expectOne(r => r.url === url).flush({ items: [item], page: 1, limit: 10, total: 1, totalPages: 1 });
+    await fixture.whenStable(); fixture.detectChanges();
+    const confirm = vi.spyOn(globalThis, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
+    const button = (Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[]).find(b => b.textContent?.trim() === 'Dar de baja')!;
+    button.click(); http.expectNone(`${environment.api.replace(/\/$/, '')}/products/123`);
+    button.click(); const req = http.expectOne(`${environment.api.replace(/\/$/, '')}/products/123`); expect(req.request.method).toBe('DELETE'); req.flush({ id: '123' }); fixture.detectChanges();
+    http.expectOne(r => r.url === url).flush({ items: [], page: 1, limit: 10, total: 0, totalPages: 0 });
+    await fixture.whenStable(); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('Producto dado de baja'); confirm.mockRestore();
+  });
+
 });

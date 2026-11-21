@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { ProfileStore } from '../../../auth/stores/profile.store';
 import { CrearProducto } from './crear-producto';
@@ -23,6 +23,7 @@ describe('CrearProducto', () => {
     expect(fixture.nativeElement.querySelector('form')).toBeNull(); http.expectNone(url);
   });
   it('valida el formulario y muestra el resultado de la creación', async () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(CrearProducto); fixture.detectChanges();
     const root = fixture.nativeElement as HTMLElement;
     const form = root.querySelector('form')!;
@@ -32,6 +33,6 @@ describe('CrearProducto', () => {
     const precio = root.querySelector<HTMLInputElement>('#producto-precio')!; precio.value = '12.50'; precio.dispatchEvent(new Event('input', { bubbles: true }));
     fixture.detectChanges(); form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const req = http.expectOne(url); expect((req.request.body as FormData).get('nombre')).toBe('Sopa'); req.flush({});
-    await fixture.whenStable(); fixture.detectChanges(); expect(root.textContent).toContain('Producto creado correctamente');
+    await fixture.whenStable(); expect(navigate).toHaveBeenCalledWith(['/admin/productos'], { state: { mensaje: 'Producto creado correctamente.' } });
   });
 });

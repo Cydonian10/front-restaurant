@@ -8,6 +8,7 @@
     @if (mensaje()) {
       <p role="status" class="mt-4">{{ mensaje() }}</p>
     }
+    @if (ocupado()) { <p role="status" class="mt-4">Procesando operación…</p> }
     @if (error()) {
       <p role="alert" class="mt-4 text-error">{{ error() }}</p>
     }
@@ -39,7 +40,7 @@
         <button class="btn mt-2" type="button" (click)="productos.reload()">Reintentar</button>
       </div>
     } @else if (listado(); as resultado) {
-      <p class="mt-6" role="status">{{ resultado.total }} productos</p>
+      <p class="mt-6" role="status">{{ resultado.total }} {{ resultado.total === 1 ? 'producto' : 'productos' }}</p>
       @if (resultado.items.length === 0) {
         <p class="mt-4">
           {{
@@ -49,37 +50,52 @@
           }}
         </p>
       }
-      <div class="productos-grid">
-        @for (producto of resultado.items; track producto.id) {
-          <article class="producto-card">
-            @if (producto.imageUrl) {
-              <img [src]="producto.imageUrl" [alt]="producto.nombre" class="producto-imagen" />
-            }
-            <p class="producto-tipo">{{ etiqueta(producto.tipo) }}</p>
-            <h2 class="mt-1 text-lg font-semibold">{{ producto.nombre }}</h2>
-            @if (producto.descripcion) {
-              <p>{{ producto.descripcion }}</p>
-            }
-            <p class="producto-precio">
-              {{ +producto.precio | currency: 'PEN' : 'S/ ' : '1.2-2' }}
-            </p>
-            <p class="disponibilidad" [class.inactivo]="!producto.disponible">
-              {{ producto.disponible ? 'Disponible' : 'No disponible' }}
-            </p>
-            <button
-              class="btn btn-outline mt-3"
-              type="button"
-              [disabled]="!!ocupado()"
-              (click)="disponibilidad(producto)"
-            >
-              {{ producto.disponible ? 'Desactivar' : 'Activar' }}
-            </button>
-            @if (!producto.imageUrl) {
-              <app-file-dropzone class="mt-3 w-full" [inputId]="'imagen-' + producto.id" label="Agregar imagen" hint="JPG, PNG o WebP · máximo 5 MB" accept="image/jpeg,image/png,image/webp" [disabled]="!!ocupado()" (fileChange)="subirImagen(producto, $event)" />
-            }
-          </article>
-        }
-      </div>
+      @if (resultado.items.length > 0) {
+        <div class="tabla-contenedor">
+          <table class="productos-tabla">
+            <caption class="sr-only">Productos de la carta</caption>
+            <thead><tr><th scope="col">Producto</th><th scope="col">Tipo</th><th scope="col">Precio</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
+            <tbody>
+              @for (producto of resultado.items; track producto.id) {
+                <tr class="producto-fila">
+                  <td data-label="Producto">
+                    <div class="producto-info">
+                      @if (producto.imageUrl) {
+                        <img [src]="producto.imageUrl" [alt]="producto.nombre" class="producto-imagen" />
+                      } @else {
+                        <div class="producto-imagen imagen-vacia" aria-label="Sin imagen">Sin imagen</div>
+                      }
+                      <div class="producto-texto"><strong>{{ producto.nombre }}</strong>@if (producto.descripcion) { <p>{{ producto.descripcion }}</p> }</div>
+                    </div>
+                  </td>
+                  <td data-label="Tipo"><span class="producto-tipo">{{ etiqueta(producto.tipo) }}</span></td>
+                  <td data-label="Precio" class="producto-precio">{{ +producto.precio | currency: 'PEN' : 'S/ ' : '1.2-2' }}</td>
+                  <td data-label="Estado"><span class="disponibilidad" [class.inactivo]="!producto.disponible">{{ producto.disponible ? 'Disponible' : 'No disponible' }}</span></td>
+                  <td data-label="Acciones"><div class="acciones">
+                    <button class="btn btn-soft btn-primary btn-sm" type="button" [disabled]="!!ocupado()" (click)="iniciarEdicion(producto)"><svg lucidePencil class="size-4" aria-hidden="true"></svg> Editar</button>
+                    <button class="btn btn-soft btn-sm" type="button" [disabled]="!!ocupado()" (click)="disponibilidad(producto)">@if (producto.disponible) { <svg lucideEyeOff class="size-4" aria-hidden="true"></svg> } @else { <svg lucideEye class="size-4" aria-hidden="true"></svg> } {{ producto.disponible ? 'Desactivar' : 'Activar' }}</button>
+                    <button class="btn btn-soft btn-error btn-sm" type="button" [disabled]="!!ocupado()" (click)="eliminar(producto)"><svg lucideArchive class="size-4" aria-hidden="true"></svg> Dar de baja</button>
+                  </div></td>
+                </tr>
+                @if (editando()?.id === producto.id) {
+                  <tr class="edicion-fila"><td colspan="5">
+                    <h2 class="edicion-titulo">Editar {{ producto.nombre }}</h2>
+              <form class="edicion" (submit)="$event.preventDefault(); guardarEdicion()">
+                <label>Nombre <input class="input input-bordered w-full" name="nombre" [ngModel]="edicion().nombre" (ngModelChange)="edicion.update(v => ({ ...v, nombre: $event }))" required maxlength="255" /></label>
+                <label>Descripción <textarea class="textarea textarea-bordered w-full" name="descripcion" [ngModel]="edicion().descripcion" (ngModelChange)="edicion.update(v => ({ ...v, descripcion: $event }))"></textarea></label>
+                <label>Precio <input class="input input-bordered w-full" name="precio" inputmode="decimal" [ngModel]="edicion().precio" (ngModelChange)="edicion.update(v => ({ ...v, precio: $event }))" required /></label>
+                <label>Tipo <select class="select select-bordered w-full" name="tipo" [ngModel]="edicion().tipo" (ngModelChange)="edicion.update(v => ({ ...v, tipo: $event }))">@for (opcion of tipos; track opcion.value) { <option [value]="opcion.value">{{ opcion.label }}</option> }</select></label>
+                <app-file-dropzone class="edicion-imagen" inputId="editar-imagen" label="Agregar o reemplazar imagen" hint="JPG, PNG o WebP · máximo 5 MB" accept="image/jpeg,image/png,image/webp" [selectedFile]="imagenEdicion()" [disabled]="!!ocupado()" (fileChange)="imagenEdicion.set($event)" />
+                <button class="btn btn-primary" type="submit" [disabled]="!!ocupado()">{{ ocupado() ? 'Guardando…' : 'Guardar cambios' }}</button>
+                <button class="btn btn-ghost" type="button" [disabled]="!!ocupado()" (click)="editando.set(null)">Cancelar</button>
+              </form>
+                  </td></tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     }
     <app-paginador [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
   }

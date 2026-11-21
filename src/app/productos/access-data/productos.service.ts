@@ -36,6 +36,20 @@ export class ProductosService {
     return this.http.post<Producto>(this.apiUrl, datos);
   }
 
+  editar(id: string, producto: ProductoCrear) {
+    const datos = new FormData();
+    datos.append('nombre', producto.nombre);
+    datos.append('precio', producto.precio);
+    datos.append('tipo', producto.tipo);
+    if (producto.descripcion?.trim()) datos.append('descripcion', producto.descripcion);
+    if (producto.imagen) datos.append('imagen', producto.imagen);
+    return this.http.patch<{ id: string }>(`${this.apiUrl}/${encodeURIComponent(id)}`, datos);
+  }
+
+  eliminar(id: string) {
+    return this.http.delete<{ id: string }>(`${this.apiUrl}/${encodeURIComponent(id)}`);
+  }
+
   agregarImagen(id: string, imagen: File) {
     const datos = new FormData();
     datos.append('imagen', imagen);
