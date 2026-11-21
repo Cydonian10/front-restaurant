@@ -170,5 +170,10 @@
 }
 
 /* CDK provides focus management and positioning; these styles match the app theme. */
-.app-dialog-panel { max-height: calc(100dvh - 32px); }
-.app-dialog-backdrop { background: #0009; backdrop-filter: blur(3px); }
+.app-dialog-panel {
+  max-height: calc(100dvh - 32px);
+}
+.app-dialog-backdrop {
+  background: #0009;
+  backdrop-filter: blur(3px);
+}

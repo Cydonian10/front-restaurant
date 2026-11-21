@@ -32,7 +32,7 @@ export class MesasService {
   crearMesa(zoneId: string, number: number, capacity: number) {
     return this.http.post(`${this.base}/tables`, { zoneId, number, capacity });
   }
-  editarMesa(id: string, cambios: { number?: number; capacity?: number; outOfService?: boolean }) {
+  editarMesa(id: string, cambios: { number?: number; capacity?: number; outOfService?: boolean; positionX?: number; positionY?: number }) {
     return this.http.patch(`${this.base}/tables/${id}`, cambios);
   }
   eliminarMesa(id: string) {

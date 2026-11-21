@@ -1,192 +1,297 @@
 @if (!autorizado) {
   <p role="alert">Acceso denegado. No tienes permiso para ver las mesas.</p>
 } @else {
-  <div class="mb-8">
-    <p>EL CORAZÓN DE TU RESTAURANTE</p>
-    <h1>Mesas y zonas</h1>
-    <span>Todo lo que pasa en tu salón, de un vistazo.</span>
-  </div>
-  @if (esAdmin) {
-    <div class="my-4 flex flex-wrap gap-2">
-      <button
-        class="btn btn-primary"
-        type="button"
-        (click)="zonaFormulario = { name: '' }; mesaFormulario = null"
-      >
-        + Nueva zona
-      </button>
-      @if (seleccion()) {
-        <button
-          class="btn btn-primary"
-          type="button"
-          (click)="
-            mesaFormulario = { zoneId: seleccion()!, number: null, capacity: null };
-            zonaFormulario = null
-          "
-        >
-          + Nueva mesa
-        </button>
+  <div class="mx-auto max-w-[1500px] space-y-6">
+    <header class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[.16em] text-secondary">
+          El corazón de tu restaurante
+        </p>
+        <h1 class="text-3xl font-semibold tracking-tight md:text-4xl">Mesas y zonas</h1>
+        <p class="mt-2 text-sm text-base-content/65">
+          Organiza tu salón y consulta el estado de cada mesa.
+        </p>
+      </div>
+      @if (esAdmin) {
+        <div class="flex flex-wrap gap-2">
+          <button class="btn btn-soft" type="button" (click)="abrirZona()">+ Nueva zona</button
+          ><button
+            class="btn btn-primary"
+            type="button"
+            [disabled]="!seleccion()"
+            (click)="abrirMesa(seleccion()!)"
+          >
+            + Nueva mesa
+          </button>
+        </div>
       }
-    </div>
+    </header>
     @if (mensaje()) {
-      <p role="status">{{ mensaje() }}</p>
+      <p
+        role="status"
+        class="fixed bottom-4 right-4 z-50 rounded-xl border border-success/30 bg-base-200 px-4 py-3 text-sm text-success shadow-lg"
+      >
+        {{ mensaje() }}
+      </p>
     }
     @if (errorOperacion()) {
-      <p role="alert" class="text-error">{{ errorOperacion() }}</p>
-    }
-    @if (zonaFormulario; as form) {
-      <form
-        class="my-4 grid max-w-2xl gap-4 rounded-2xl border border-base-content/10 bg-base-200 p-6"
-        (submit)="$event.preventDefault(); guardarZona()"
+      <p
+        role="alert"
+        class="fixed bottom-4 right-4 z-50 rounded-xl border border-error/30 bg-base-200 px-4 py-3 text-sm text-error shadow-lg"
       >
-        <h2>{{ form.id ? 'Editar zona' : 'Nueva zona' }}</h2>
-        <app-form-field
-          inputId="zona-nombre"
-          label="Nombre"
-          [field]="zonaForm.name"
-          [submitted]="intentado()"
-        />
-        <div>
-          <button class="btn btn-primary" type="submit" [disabled]="ocupado()">Guardar</button>
-          <button class="btn" type="button" (click)="zonaFormulario = null" [disabled]="ocupado()">
-            Cancelar
-          </button>
-        </div>
-      </form>
+        {{ errorOperacion() }}
+      </p>
     }
-    @if (mesaFormulario; as form) {
-      <form
-        class="my-4 grid max-w-2xl gap-4 rounded-2xl border border-base-content/10 bg-base-200 p-6"
-        (submit)="$event.preventDefault(); guardarMesa()"
-      >
-        <h2>{{ form.id ? 'Editar mesa' : 'Nueva mesa' }}</h2>
-        <app-form-field
-          inputId="mesa-numero"
-          label="Número"
-          [field]="mesaForm.number"
-          [submitted]="intentado()"
-        />
-        <app-form-field
-          inputId="mesa-capacidad"
-          label="Capacidad"
-          [field]="mesaForm.capacity"
-          [submitted]="intentado()"
-        />
-        <div>
-          <button class="btn btn-primary" type="submit" [disabled]="ocupado()">Guardar</button>
-          <button class="btn" type="button" (click)="mesaFormulario = null" [disabled]="ocupado()">
-            Cancelar
-          </button>
+    @if (estado() === 'cargando') {
+      <p role="status" class="py-8 text-base-content/65">Cargando mesas y zonas…</p>
+    } @else if (estado() === 'error') {
+      <div role="alert" class="rounded-2xl border border-base-content/10 bg-base-200 p-6">
+        <p>No se pudieron cargar las mesas.</p>
+        <button class="btn mt-4" type="button" (click)="cargar()">Reintentar</button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <div class="stat-card">
+          <span>Mesas totales</span><strong>{{ resumen().total }}</strong
+          ><small>En el restaurante</small>
         </div>
-      </form>
-    }
-  }
-  @if (estado() === 'cargando') {
-    <p role="status">Cargando mesas y zonas…</p>
-  } @else if (estado() === 'error') {
-    <div role="alert">
-      No se pudieron cargar las mesas.
-      <button class="btn mt-2" type="button" (click)="cargar()">Reintentar</button>
-    </div>
-  } @else if (zonas().length === 0) {
-    <p>No hay zonas disponibles.</p>
-  } @else {
-    <section class="rounded-2xl border border-base-content/10 bg-base-200 p-6">
-      <h2>Plano del restaurante</h2>
-      <p>Consulta las mesas de cada zona.</p>
-      <nav class="my-6 flex flex-wrap gap-2" aria-label="Zonas">
-        @for (zona of zonas(); track zona.id) {
-          <button
-            type="button"
-            [class.active]="seleccion() === zona.id"
-            [attr.aria-pressed]="seleccion() === zona.id"
-            (click)="seleccion.set(zona.id); mesaSeleccionada.set(null)"
+        <div class="stat-card">
+          <span>Disponibles</span><strong>{{ resumen().disponibles }}</strong
+          ><small>Listas para recibir</small>
+        </div>
+        <div class="stat-card">
+          <span>Ocupadas</span><strong>{{ resumen().ocupadas }}</strong
+          ><small>En atención</small>
+        </div>
+        <div class="stat-card">
+          <span>Fuera de servicio</span><strong>{{ resumen().fuera }}</strong
+          ><small>No disponibles</small>
+        </div>
+      </div>
+      @if (zonas().length === 0) {
+        <section
+          class="rounded-2xl border border-base-content/10 bg-base-200 px-6 py-16 text-center"
+        >
+          <div
+            class="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-primary/10 text-2xl text-primary"
           >
-            {{ zona.name }}
-          </button>
-        }
-      </nav>
-      @for (zona of zonas(); track zona.id) {
-        @if (seleccion() === zona.id) {
-          <h3>{{ zona.name }} · {{ zona.tables.length }} mesas</h3>
+            ▦
+          </div>
+          <h2 class="text-lg font-semibold">Tu salón comienza aquí</h2>
+          <p class="mt-2 text-sm text-base-content/65">
+            {{
+              esAdmin
+                ? 'Crea una zona para empezar a organizar tus mesas.'
+                : 'Aún no hay zonas disponibles.'
+            }}
+          </p>
           @if (esAdmin) {
-            <div class="my-4 flex flex-wrap gap-2">
-              <button
-                class="btn btn-soft btn-sm"
-                (click)="zonaFormulario = { id: zona.id, name: zona.name }; mesaFormulario = null"
-              >
-                Editar zona</button
-              ><button
-                class="btn btn-soft btn-error btn-sm"
-                [disabled]="ocupado()"
-                (click)="eliminarZona(zona)"
-              >
-                Desactivar zona
-              </button>
-            </div>
+            <button class="btn btn-primary mt-5" type="button" (click)="abrirZona()">
+              + Crear primera zona
+            </button>
           }
-          @if (zona.tables.length === 0) {
-            <p>No hay mesas en esta zona.</p>
-          } @else {
-            <div class="overflow-auto rounded-2xl border border-base-content/10">
-              <div class="plano" [style.width.px]="ancho(zona)" [style.height.px]="alto(zona)">
-                @for (mesa of zona.tables; track mesa.id) {
-                  <button
-                    type="button"
-                    class="mesa absolute flex min-h-[90px] w-[110px] cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border text-sm focus-visible:outline-2 focus-visible:outline-secondary"
-                    (click)="mesaSeleccionada.set(mesa)"
-                    [class.ocupada]="mesa.status === 'OCCUPIED'"
-                    [class.fuera]="mesa.status === 'OUT_OF_SERVICE'"
-                    [style.left.px]="mesa.positionX"
-                    [style.top.px]="mesa.positionY"
+        </section>
+      } @else {
+        <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_290px]">
+          <section
+            class="min-w-0 overflow-hidden rounded-2xl border border-base-content/10 bg-base-200"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-4 px-6 pt-6">
+              <div>
+                <h2 class="text-lg font-semibold">Plano del restaurante</h2>
+                <p class="mt-1 text-sm text-base-content/60">
+                  Selecciona una mesa para ver sus detalles.
+                </p>
+              </div>
+              @if (esAdmin) {
+                <button class="btn btn-sm" type="button" (click)="abrirZona()">+ Zona</button>
+              }
+            </div>
+            <nav
+              class="mt-4 flex gap-1 overflow-x-auto border-b border-base-content/10 px-4"
+              aria-label="Zonas"
+            >
+              @for (zona of zonas(); track zona.id) {
+                <button
+                  type="button"
+                  class="zone-tab"
+                  [class.selected]="seleccion() === zona.id"
+                  [attr.aria-pressed]="seleccion() === zona.id"
+                  (click)="seleccion.set(zona.id); mesaSeleccionada.set(null)"
+                >
+                  {{ zona.name }}
+                </button>
+              }
+            </nav>
+            @for (zona of zonas(); track zona.id) {
+              @if (seleccion() === zona.id) {
+                <div class="p-5">
+                  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h3 class="font-semibold">
+                        {{ zona.name }}
+                        <span class="font-normal text-base-content/50"
+                          >· {{ zona.tables.length }}
+                          {{ zona.tables.length === 1 ? 'mesa' : 'mesas' }}</span
+                        >
+                      </h3>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 text-xs text-base-content/65">
+                      <span><i class="legend bg-success"></i> Disponible</span
+                      ><span><i class="legend bg-warning"></i> Ocupada</span
+                      ><span><i class="legend bg-base-content/40"></i> Fuera de servicio</span>
+                    </div>
+                  </div>
+                  @if (esAdmin) {
+                    <div class="mb-4 flex gap-2">
+                      <button class="btn btn-ghost btn-xs" type="button" (click)="abrirZona(zona)">
+                        Editar zona</button
+                      ><button
+                        class="btn btn-ghost btn-xs text-error"
+                        type="button"
+                        [disabled]="ocupado()"
+                        (click)="eliminarZona(zona)"
+                      >
+                        Desactivar zona
+                      </button>
+                    </div>
+                  }
+                  @if (zona.tables.length === 0) {
+                    <div
+                      class="rounded-xl border border-dashed border-base-content/20 bg-base-100 px-5 py-16 text-center"
+                    >
+                      <p class="font-medium">Esta zona aún no tiene mesas</p>
+                      <p class="mt-1 text-sm text-base-content/60">
+                        Agrega una mesa para comenzar a organizar el espacio.
+                      </p>
+                      @if (esAdmin) {
+                        <button
+                          class="btn btn-primary btn-sm mt-4"
+                          type="button"
+                          (click)="abrirMesa(zona.id)"
+                        >
+                          + Nueva mesa
+                        </button>
+                      }
+                    </div>
+                  } @else {
+                    <div class="overflow-auto rounded-xl border border-base-content/10">
+                      <div
+                        class="plano"
+                        [style.width.px]="ancho(zona)"
+                        [style.height.px]="alto(zona)"
+                      >
+                        @for (mesa of zona.tables; track mesa.id) {
+                          <button
+                            type="button"
+                            class="mesa absolute flex min-h-[90px] w-[110px] flex-col items-center justify-center gap-1 rounded-xl border text-sm focus-visible:outline-2 focus-visible:outline-secondary"
+                            [class.elegida]="mesaSeleccionada()?.id === mesa.id"
+                            [class.ocupada]="mesa.status === 'OCCUPIED'"
+                            [class.fuera]="mesa.status === 'OUT_OF_SERVICE'"
+                            [style.left.px]="
+                              desplazamiento()?.id === mesa.id
+                                ? desplazamiento()!.x
+                                : mesa.positionX
+                            "
+                            [style.top.px]="
+                              desplazamiento()?.id === mesa.id
+                                ? desplazamiento()!.y
+                                : mesa.positionY
+                            "
+                            [style.touch-action]="esAdmin ? 'none' : 'auto'"
+                            (click)="mesaSeleccionada.set(mesa)"
+                            (pointerdown)="iniciarArrastre($event, mesa)"
+                            (pointermove)="moverArrastre($event)"
+                            (pointerup)="terminarArrastre($event)"
+                            (pointercancel)="cancelarArrastre()"
+                            (keydown)="moverTeclado($event, mesa)"
+                          >
+                            <span aria-hidden="true" class="text-lg text-secondary">▦</span
+                            ><strong>Mesa {{ mesa.number }}</strong
+                            ><small class="text-base-content/65">{{ mesa.capacity }} personas</small
+                            ><small class="text-base-content/65">{{ etiqueta(mesa.status) }}</small>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                    @if (esAdmin) {
+                      <p class="mt-3 text-xs text-base-content/55">
+                        Arrastra las mesas para organizar el plano. También puedes usar las flechas
+                        del teclado.
+                      </p>
+                    }
+                  }
+                </div>
+              }
+            }
+          </section>
+          <aside class="rounded-2xl border border-base-content/10 bg-base-200 p-6">
+            <h2 class="text-lg font-semibold">Detalle de la mesa</h2>
+            <p class="mt-1 text-sm text-base-content/60">Información de la mesa seleccionada.</p>
+            @if (mesaSeleccionada(); as mesa) {
+              <div class="mt-6 border-t border-base-content/10 pt-5">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="grid size-12 place-items-center rounded-xl bg-primary/10 text-xl text-primary"
+                    >▦</span
                   >
-                    <span aria-hidden="true">▦</span><strong>Mesa {{ mesa.number }}</strong
-                    ><small>{{ mesa.capacity }} personas</small
-                    ><small>{{ etiqueta(mesa.status) }}</small>
-                  </button>
+                  <div>
+                    <h3 class="font-semibold">Mesa {{ mesa.number }}</h3>
+                    <p class="text-sm text-base-content/60">{{ mesa.capacity }} personas</p>
+                  </div>
+                </div>
+                <p class="mt-5">
+                  <span
+                    class="badge badge-soft"
+                    [class.badge-success]="mesa.status === 'AVAILABLE'"
+                    [class.badge-warning]="mesa.status === 'OCCUPIED'"
+                    >{{ etiqueta(mesa.status) }}</span
+                  >
+                </p>
+                @if (esAdmin) {
+                  <div class="mt-6 grid gap-2 border-t border-base-content/10 pt-5">
+                    <button
+                      class="btn btn-primary btn-sm"
+                      type="button"
+                      (click)="abrirMesa(seleccion()!, mesa)"
+                    >
+                      Editar mesa</button
+                    ><button
+                      class="btn btn-soft btn-sm"
+                      type="button"
+                      [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
+                      (click)="disponibilidad(mesa)"
+                    >
+                      {{
+                        mesa.status === 'OUT_OF_SERVICE'
+                          ? 'Poner disponible'
+                          : 'Poner fuera de servicio'
+                      }}</button
+                    ><button
+                      class="btn btn-ghost btn-sm text-error"
+                      type="button"
+                      [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
+                      (click)="eliminarMesa(mesa)"
+                    >
+                      Desactivar mesa
+                    </button>
+                    @if (mesa.status === 'OCCUPIED') {
+                      <p class="text-xs text-base-content/60">
+                        Una mesa ocupada no puede desactivarse ni ponerse fuera de servicio.
+                      </p>
+                    }
+                  </div>
                 }
               </div>
-            </div>
-            @if (esAdmin && mesaSeleccionada(); as mesa) {
-              <div class="mt-4">
-                <strong>Mesa {{ mesa.number }}</strong>
-                <div class="my-4 flex flex-wrap gap-2">
-                  <button
-                    class="btn btn-soft btn-primary btn-sm"
-                    (click)="
-                      mesaFormulario = {
-                        id: mesa.id,
-                        zoneId: zona.id,
-                        number: mesa.number,
-                        capacity: mesa.capacity,
-                      };
-                      zonaFormulario = null
-                    "
-                  >
-                    Editar
-                  </button>
-                  <button
-                    class="btn btn-soft btn-sm"
-                    [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
-                    (click)="disponibilidad(mesa)"
-                  >
-                    {{
-                      mesa.status === 'OUT_OF_SERVICE' ? 'Poner disponible' : 'Fuera de servicio'
-                    }}
-                  </button>
-                  <button
-                    class="btn btn-soft btn-error btn-sm"
-                    [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
-                    (click)="eliminarMesa(mesa)"
-                  >
-                    Desactivar mesa
-                  </button>
-                </div>
+            } @else {
+              <div class="py-12 text-center text-sm text-base-content/55">
+                <span class="mb-3 block text-3xl" aria-hidden="true">▦</span>Selecciona una mesa en
+                el plano.
               </div>
             }
-          }
-        }
+          </aside>
+        </div>
       }
-    </section>
-  }
+    }
+  </div>
 }

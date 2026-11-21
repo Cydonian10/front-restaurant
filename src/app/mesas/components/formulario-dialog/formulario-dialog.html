@@ -1,0 +1,46 @@
+<app-dialog [title]="titulo" (closed)="cerrar()">
+  <p class="mb-5 text-sm text-base-content/65">
+    {{
+      data.tipo === 'zona'
+        ? 'Dale un nombre que te ayude a identificar este espacio.'
+        : 'Define el número y la capacidad de la mesa en esta zona.'
+    }}
+  </p>
+  <form id="formulario-mesa-zona" class="grid gap-4" (submit)="guardar($event)">
+    @if (data.tipo === 'zona') {
+      <app-form-field
+        inputId="zona-nombre"
+        label="Nombre de la zona"
+        [field]="formulario.nombre"
+        [submitted]="intentado()"
+      />
+    } @else {
+      <app-form-field
+        inputId="mesa-numero"
+        label="Número de mesa"
+        [field]="formulario.numero"
+        [submitted]="intentado()"
+      /><app-form-field
+        inputId="mesa-capacidad"
+        label="Capacidad (personas)"
+        [field]="formulario.capacidad"
+        [submitted]="intentado()"
+      />
+    }
+    @if (error()) {
+      <p role="alert" class="text-sm text-error">{{ error() }}</p>
+    }
+  </form>
+  <div dialog-footer class="flex gap-2">
+    <button class="btn btn-ghost" type="button" (click)="cerrar()" [disabled]="ocupado()">
+      Cancelar</button
+    ><button
+      class="btn btn-primary"
+      type="submit"
+      form="formulario-mesa-zona"
+      [disabled]="ocupado()"
+    >
+      {{ ocupado() ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </div>
+</app-dialog>
