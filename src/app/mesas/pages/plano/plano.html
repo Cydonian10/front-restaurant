@@ -1,30 +1,106 @@
 @if (!autorizado) {
   <p role="alert">Acceso denegado. No tienes permiso para ver las mesas.</p>
 } @else {
-  <div class="heading">
+  <div class="mb-8">
     <p>EL CORAZÓN DE TU RESTAURANTE</p>
     <h1>Mesas y zonas</h1>
     <span>Todo lo que pasa en tu salón, de un vistazo.</span>
   </div>
+  @if (esAdmin) {
+    <div class="my-4 flex flex-wrap gap-2">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="zonaFormulario = { name: '' }; mesaFormulario = null"
+      >
+        + Nueva zona
+      </button>
+      @if (seleccion()) {
+        <button
+          class="btn btn-primary"
+          type="button"
+          (click)="
+            mesaFormulario = { zoneId: seleccion()!, number: null, capacity: null };
+            zonaFormulario = null
+          "
+        >
+          + Nueva mesa
+        </button>
+      }
+    </div>
+    @if (mensaje()) {
+      <p role="status">{{ mensaje() }}</p>
+    }
+    @if (errorOperacion()) {
+      <p role="alert" class="text-error">{{ errorOperacion() }}</p>
+    }
+    @if (zonaFormulario; as form) {
+      <form
+        class="my-4 grid max-w-2xl gap-4 rounded-2xl border border-base-content/10 bg-base-200 p-6"
+        (submit)="$event.preventDefault(); guardarZona()"
+      >
+        <h2>{{ form.id ? 'Editar zona' : 'Nueva zona' }}</h2>
+        <app-form-field
+          inputId="zona-nombre"
+          label="Nombre"
+          [field]="zonaForm.name"
+          [submitted]="intentado()"
+        />
+        <div>
+          <button class="btn btn-primary" type="submit" [disabled]="ocupado()">Guardar</button>
+          <button class="btn" type="button" (click)="zonaFormulario = null" [disabled]="ocupado()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    }
+    @if (mesaFormulario; as form) {
+      <form
+        class="my-4 grid max-w-2xl gap-4 rounded-2xl border border-base-content/10 bg-base-200 p-6"
+        (submit)="$event.preventDefault(); guardarMesa()"
+      >
+        <h2>{{ form.id ? 'Editar mesa' : 'Nueva mesa' }}</h2>
+        <app-form-field
+          inputId="mesa-numero"
+          label="Número"
+          [field]="mesaForm.number"
+          [submitted]="intentado()"
+        />
+        <app-form-field
+          inputId="mesa-capacidad"
+          label="Capacidad"
+          [field]="mesaForm.capacity"
+          [submitted]="intentado()"
+        />
+        <div>
+          <button class="btn btn-primary" type="submit" [disabled]="ocupado()">Guardar</button>
+          <button class="btn" type="button" (click)="mesaFormulario = null" [disabled]="ocupado()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    }
+  }
   @if (estado() === 'cargando') {
     <p role="status">Cargando mesas y zonas…</p>
   } @else if (estado() === 'error') {
     <div role="alert">
-      No se pudieron cargar las mesas. <button class="btn mt-2" type="button" (click)="cargar()">Reintentar</button>
+      No se pudieron cargar las mesas.
+      <button class="btn mt-2" type="button" (click)="cargar()">Reintentar</button>
     </div>
   } @else if (zonas().length === 0) {
     <p>No hay zonas disponibles.</p>
   } @else {
-    <section class="panel">
+    <section class="rounded-2xl border border-base-content/10 bg-base-200 p-6">
       <h2>Plano del restaurante</h2>
       <p>Consulta las mesas de cada zona.</p>
-      <nav class="tabs" aria-label="Zonas">
+      <nav class="my-6 flex flex-wrap gap-2" aria-label="Zonas">
         @for (zona of zonas(); track zona.id) {
           <button
             type="button"
             [class.active]="seleccion() === zona.id"
             [attr.aria-pressed]="seleccion() === zona.id"
-            (click)="seleccion.set(zona.id)"
+            (click)="seleccion.set(zona.id); mesaSeleccionada.set(null)"
           >
             {{ zona.name }}
           </button>
@@ -33,14 +109,32 @@
       @for (zona of zonas(); track zona.id) {
         @if (seleccion() === zona.id) {
           <h3>{{ zona.name }} · {{ zona.tables.length }} mesas</h3>
+          @if (esAdmin) {
+            <div class="my-4 flex flex-wrap gap-2">
+              <button
+                class="btn btn-soft btn-sm"
+                (click)="zonaFormulario = { id: zona.id, name: zona.name }; mesaFormulario = null"
+              >
+                Editar zona</button
+              ><button
+                class="btn btn-soft btn-error btn-sm"
+                [disabled]="ocupado()"
+                (click)="eliminarZona(zona)"
+              >
+                Desactivar zona
+              </button>
+            </div>
+          }
           @if (zona.tables.length === 0) {
             <p>No hay mesas en esta zona.</p>
           } @else {
-            <div class="scroll">
+            <div class="overflow-auto rounded-2xl border border-base-content/10">
               <div class="plano" [style.width.px]="ancho(zona)" [style.height.px]="alto(zona)">
                 @for (mesa of zona.tables; track mesa.id) {
-                  <div
-                    class="mesa"
+                  <button
+                    type="button"
+                    class="mesa absolute flex min-h-[90px] w-[110px] cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border text-sm focus-visible:outline-2 focus-visible:outline-secondary"
+                    (click)="mesaSeleccionada.set(mesa)"
                     [class.ocupada]="mesa.status === 'OCCUPIED'"
                     [class.fuera]="mesa.status === 'OUT_OF_SERVICE'"
                     [style.left.px]="mesa.positionX"
@@ -49,10 +143,47 @@
                     <span aria-hidden="true">▦</span><strong>Mesa {{ mesa.number }}</strong
                     ><small>{{ mesa.capacity }} personas</small
                     ><small>{{ etiqueta(mesa.status) }}</small>
-                  </div>
+                  </button>
                 }
               </div>
             </div>
+            @if (esAdmin && mesaSeleccionada(); as mesa) {
+              <div class="mt-4">
+                <strong>Mesa {{ mesa.number }}</strong>
+                <div class="my-4 flex flex-wrap gap-2">
+                  <button
+                    class="btn btn-soft btn-primary btn-sm"
+                    (click)="
+                      mesaFormulario = {
+                        id: mesa.id,
+                        zoneId: zona.id,
+                        number: mesa.number,
+                        capacity: mesa.capacity,
+                      };
+                      zonaFormulario = null
+                    "
+                  >
+                    Editar
+                  </button>
+                  <button
+                    class="btn btn-soft btn-sm"
+                    [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
+                    (click)="disponibilidad(mesa)"
+                  >
+                    {{
+                      mesa.status === 'OUT_OF_SERVICE' ? 'Poner disponible' : 'Fuera de servicio'
+                    }}
+                  </button>
+                  <button
+                    class="btn btn-soft btn-error btn-sm"
+                    [disabled]="ocupado() || mesa.status === 'OCCUPIED'"
+                    (click)="eliminarMesa(mesa)"
+                  >
+                    Desactivar mesa
+                  </button>
+                </div>
+              </div>
+            }
           }
         }
       }
